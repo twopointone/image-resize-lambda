@@ -1,0 +1,22 @@
+{
+  "name": "image-resize-lambda",
+  "version": "0.1.0",
+  "description": "A node package to resize images to be run on aws lambda",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vikalpj/image-resize-lambda.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/vikalpj/image-resize-lambda/issues"
+  },
+  "homepage": "https://github.com/vikalpj/image-resize-lambda#readme",
+  "dependencies": {
+    "smartcrop": "^1.1.1",
+    "smartcrop-sharp": "^1.0.5"
+  }
+}
