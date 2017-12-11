@@ -1,4 +1,3 @@
-
 var config = require('./config')
 var applySmartCrop = require('./app/imageResize')
 // const AWS = require('aws-sdk');
@@ -19,10 +18,9 @@ exports.handler = function(event, context, callback) {
     const originalKey = match[4];
 
 
-    callback({
+    callback(null, {
         statusCode: '302',
         headers: { 'location': config.BASE_DESTINATION_URL + '/200x200/flower.jpg' },
         body: ''
     });
-
-}
+};
