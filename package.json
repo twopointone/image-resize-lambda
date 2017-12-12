@@ -21,6 +21,7 @@
     "smartcrop-sharp": "^1.0.5"
   },
   "devDependencies": {
+    "aws-sdk": "^2.168.0",
     "express": "^4.16.2"
   }
 }
