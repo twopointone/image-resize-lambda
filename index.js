@@ -3,7 +3,7 @@ var ProcessImage = require('./app/processImage');
 
 exports.handler = function(event, context, callback) {
     const key = event.queryStringParameters.key;
-    const match = key.match(/images\/(\d+)x(\d+)\/(.*)\/(.*)/);
+    const match = key.match(/images\/(\d+)x(\d+)\/(\w+)\/(.*)/);
 
     const width = parseInt(match[1], 10);
     const height = parseInt(match[2], 10);

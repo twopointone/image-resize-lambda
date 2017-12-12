@@ -41,7 +41,7 @@ function applySmartCrop(image, width, height, callback) {
             .extract({ width: crop.width, height: crop.height, left: crop.x, top: crop.y })
             .resize(width, height)
             .toBuffer(callback)
-    });
+    }, callback);
 }
 
 exports.processImage = processImage;
