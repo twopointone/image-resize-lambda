@@ -8,9 +8,9 @@ function processImage(width, height, path, destPath, imageProcessType, processIm
     storage.storage.getFile(path, getFileCallback);
 
     function getFileCallback (err, image) {
-        function sharpCallback(err, data, info) {
+        function sharpCallback(err, data, fileInfo) {
             if (!err) {
-                storage.storage.saveFile(destPath, data, saveFileCallBack);
+                storage.storage.saveFile(destPath, data, fileInfo, saveFileCallBack);
             }
 
             function saveFileCallBack () {

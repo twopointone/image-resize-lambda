@@ -1,5 +1,6 @@
 var config = require('../../config');
 var AWS = require('aws-sdk');
+var mime = require('mime-types');
 
 // make s3 calls in sync
 var S3 = new AWS.S3();
@@ -18,11 +19,13 @@ function getFile(key, callback) {
     });
 }
 
-function saveFile(destKey, imageBufferData, saveFileCallBack) {
+function saveFile(destKey, imageBufferData, fileiInfo, saveFileCallBack) {
+    var contentType = mime.lookup(fileiInfo.format);
     S3.putObject({
         Body: imageBufferData,
         Bucket: config.OUTPUT_BUCKET,
-        Key: destKey
+        Key: destKey,
+        ContentType: contentType
     }, function(err, data) {
         saveFileCallBack(err, data);
     });
