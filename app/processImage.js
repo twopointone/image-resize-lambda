@@ -20,21 +20,16 @@ function processImage(width, height, path, destPath, imageProcessType, processIm
             if (imageProcessType == 'smartcrop') {
                 applySmartCrop(image, width, height, callback);
             } else {
-                processImageCallback({}); // call with error;
-                callback({}) // call with err
+                callback({}); // call with err
             }
         },
         function( data, fileInfo, callback){
             // save file to S3
             storage.storage.saveFile(destPath, data, fileInfo, callback);
-        },
-        function (callback){
-            // return response to the lambda
-            processImageCallback(null, {});
-            callback();
         }
     ], function (err, result) {
-        processImageCallback({});
+        // this function is always executed both in case of err and succcess as well
+        processImageCallback(err, result);
     });
 }
 
