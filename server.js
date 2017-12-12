@@ -6,7 +6,11 @@ var lambda = require('./index.js');
 
 
 // Match the lambda behaviour to generate the file and then serve from the destination bucket
-app.use(express.static('bucket/output'));
+app.use(express.static(config.DESTINATION_PATH));
+
+app.get('/favicon.ico', function(req, res) {
+    res.send('');
+});
 
 app.get('*', function(req, res) {
     var path = req.path;
@@ -15,10 +19,16 @@ app.get('*', function(req, res) {
             key: path
         }
     };
-    function responseFunction (data) {
-        res.writeHead(data.statusCode, data.headers);
-        res.end();
+
+    function responseFunction(error, result) {
+        if (!error) {
+            res.writeHead(result.statusCode, result.headers);
+            res.end();
+        } else {
+
+        }
     }
+
     lambda.handler(handlerEvent, {}, responseFunction);
 });
 
