@@ -19,16 +19,14 @@ function getFile(key, callback) {
     });
 }
 
-function saveFile(destKey, imageBufferData, fileiInfo, saveFileCallBack) {
-    var contentType = mime.lookup(fileiInfo.format);
+function saveFile(destKey, imageBufferData, fileInfo, saveFileCallBack) {
+    var contentType = mime.lookup(fileInfo.format);
     S3.putObject({
         Body: imageBufferData,
         Bucket: config.OUTPUT_BUCKET,
         Key: destKey,
         ContentType: contentType
-    }, function(err, data) {
-        saveFileCallBack(err, data);
-    });
+    }, saveFileCallBack);
 }
 
 exports.storage = {
