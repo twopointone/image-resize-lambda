@@ -16,7 +16,9 @@
   },
   "homepage": "https://github.com/vikalpj/image-resize-lambda#readme",
   "dependencies": {
+    "async": "^2.6.0",
     "dotenv": "^4.0.0",
+    "mime-types": "^2.1.17",
     "mkdirp": "^0.5.1",
     "smartcrop": "^1.1.1",
     "smartcrop-sharp": "^1.0.5"
