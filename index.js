@@ -2,9 +2,6 @@ var config = require('./config');
 var ProcessImage = require('./app/processImage');
 
 exports.handler = function(event, context, callback) {
-    console.log(event, config.BASE_DESTINATION_URL);
-
-
     const key = event.queryStringParameters.key;
     const match = key.match(/images\/(\d+)x(\d+)\/(.*)\/(.*)/);
 
@@ -13,7 +10,7 @@ exports.handler = function(event, context, callback) {
 
     // crop-type
     const cropType = match[3];
-    const originalKey = match[4];
+    const inputBucketKey = match[4];
 
     function processImageCallback(err, data) {
         if (!err){
@@ -30,8 +27,7 @@ exports.handler = function(event, context, callback) {
         }
     }
 
-    ProcessImage.processImage(width, height, originalKey, key, cropType, processImageCallback);
-
+    ProcessImage.processImage(width, height, inputBucketKey, key.replace('/', ''), cropType, processImageCallback);
 
     // applySmartCrop.applySmartCrop(src, 'flower-square.jpg', 128, 128);
 

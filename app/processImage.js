@@ -5,20 +5,24 @@ var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 
 function processImage(width, height, path, destPath, imageProcessType, processImageCallback) {
-    var image = storage.storage.getFile(path);
+    storage.storage.getFile(path, getFileCallback);
 
-    function sharpCallback(err, data, info) {
-        if (!err) {
-            storage.storage.saveFile(destPath, data);
+    function getFileCallback (err, image) {
+        function sharpCallback(err, data, info) {
+            if (!err) {
+                storage.storage.saveFile(destPath, data, saveFileCallBack);
+            }
+
+            function saveFileCallBack () {
+                processImageCallback(null, {});
+            }
         }
 
-        processImageCallback(null, {});
-    }
-
-    if (imageProcessType == 'smartcrop') {
-        applySmartCrop(image, width, height, sharpCallback);
-    } else {
-        console.log(imageProcessType);
+        if (imageProcessType == 'smartcrop') {
+            applySmartCrop(image, width, height, sharpCallback);
+        } else {
+            processImageCallback({}); // call with error;
+        }
     }
 }
 
@@ -31,6 +35,6 @@ function applySmartCrop(image, width, height, callback) {
             .resize(width, height)
             .toBuffer(callback)
     });
-};
+}
 
 exports.processImage = processImage;
