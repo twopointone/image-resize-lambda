@@ -9,7 +9,8 @@ var storage = require(config.STORAGE);
 const functionMapping = {
     'smartcrop': applySmartCrop,
     'crop': applyCrop,
-    'cover': applyCoverResize
+    'cover': applyCoverResize,
+    'raw': rawImage
 };
 
 function processImage(size, path, destPath, imageProcessType, processImageCallback) {
@@ -36,7 +37,7 @@ function processImage(size, path, destPath, imageProcessType, processImageCallba
             storage.storage.saveFile(destPath, data, fileInfo, callback);
         }
     ], function(err, result) {
-        // this function is always executed both in case of err and succcess as well
+        // this function is always executed both in case of err and success as well
         processImageCallback(err, result);
     });
 }
@@ -67,6 +68,14 @@ function applyCoverResize(image, cropSize, callback) {
         .resize(cropSize.width, cropSize.height)
         .max()
         .toBuffer(callback)
+}
+
+function rawImage(image, cropSize, callback) {
+    if (cropSize.width || cropSize.height) {
+        callback({}); // raise error if height or width is provided with rawType
+        return ;
+    }
+    callback(null, image, {});
 }
 
 exports.processImage = processImage;

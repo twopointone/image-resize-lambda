@@ -2,15 +2,15 @@ var config = require('./config');
 var ProcessImage = require('./app/processImage');
 
 function resolveParamsFromKey(key) {
-    const match = key.match(/images\/(\d+)x(\d+)\/(\w+)\/(.*)/);
+    const regexMatch = key.match(/images\/((\d+)x(\d+)\/)?([a-zA-Z]+)\/(.*)/);
 
-    if (match.length > 0) {
-        const width = parseInt(match[1], 10);
-        const height = parseInt(match[2], 10);
+    if (regexMatch && regexMatch.length > 0) {
+        const width = parseInt(regexMatch[2], 10);
+        const height = parseInt(regexMatch[3], 10);
 
         // crop-type
-        const cropType = match[3];
-        const inputBucketKey = match[4];
+        const cropType = regexMatch[4];
+        const inputBucketKey = regexMatch[5];
 
         return {
             size: {
