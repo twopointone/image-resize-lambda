@@ -5,32 +5,42 @@ var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 
+
+const functionMapping = {
+    'smartcrop': applySmartCrop,
+};
+
 function processImage(size, path, destPath, imageProcessType, processImageCallback) {
 
     // Run all the steps in sync with response of 1 step acting as input for other.
     // avoiding the callback structure
     // https://caolan.github.io/async/docs.html#waterfall
     async.waterfall([
-        function (callback) {
+        function(callback) {
             // Get the file from the disk or S3
             storage.storage.getFile(path, callback);
         },
-        function(image, callback){
+        function(image, callback) {
             // Process the image as per the process type
-            if (imageProcessType == 'smartcrop') {
-                applySmartCrop(image, size, callback);
+            var cropFunction = getCropFunction(imageProcessType);
+            if (cropFunction) {
+                cropFunction(image, size, callback);
             } else {
                 callback({}); // call with err
             }
         },
-        function( data, fileInfo, callback){
+        function(data, fileInfo, callback) {
             // save file to S3
             storage.storage.saveFile(destPath, data, fileInfo, callback);
         }
-    ], function (err, result) {
+    ], function(err, result) {
         // this function is always executed both in case of err and succcess as well
         processImageCallback(err, result);
     });
+}
+
+function getCropFunction(cropType) {
+    return functionMapping[cropType.toLowerCase()]
 }
 
 
@@ -39,7 +49,7 @@ function applySmartCrop(image, cropSize, callback) {
         var crop = result.topCrop;
         sharp(image)
             .extract({ width: crop.width, height: crop.height, left: crop.x, top: crop.y })
-            .resize(width, height)
+            .resize(cropSize.width, cropSize.height)
             .toBuffer(callback)
     }, callback);
 }

@@ -2,7 +2,6 @@ var config = require('./config');
 var ProcessImage = require('./app/processImage');
 
 function resolveParamsFromKey(key) {
-    const key = event.queryStringParameters.key;
     const match = key.match(/images\/(\d+)x(\d+)\/(\w+)\/(.*)/);
 
     if (match.length > 0) {
@@ -28,7 +27,8 @@ function resolveParamsFromKey(key) {
 }
 
 exports.handler = function(event, context, callback) {
-    var params = resolveParamsFromKey(event.queryStringParameters.key);
+    const key = event.queryStringParameters.key;
+    var params = resolveParamsFromKey(key);
 
     function processImageCallback(err, data) {
         if (!err){
@@ -40,7 +40,7 @@ exports.handler = function(event, context, callback) {
         } else {
             callback(null, {
                 statusCode: '405',
-                body: cropType + ' Method not supported'
+                body: params.cropType + ' Method not supported'
             });
         }
     }
