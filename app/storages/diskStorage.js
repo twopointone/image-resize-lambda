@@ -4,7 +4,15 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 
 function getFile(sourcePath, callback) {
-    callback(null, path.join(config.INPUT_IMAGE_SOURCE, sourcePath));
+    var filePath = path.join(config.INPUT_IMAGE_SOURCE, sourcePath);
+
+    // Always read file and return the buffered data as other storage sources.
+    fs.readFile(filePath, function (err, imageData) {
+        if (err) {
+            callback(err);
+        }
+        callback(null, imageData);
+    })
 }
 
 function saveFile(destPath, imageBufferData, fileInfo, saveFileCallBack) {
