@@ -8,6 +8,8 @@ var storage = require(config.STORAGE);
 
 const functionMapping = {
     'smartcrop': applySmartCrop,
+    'crop': applyCrop,
+    'cover': applyCoverResize
 };
 
 function processImage(size, path, destPath, imageProcessType, processImageCallback) {
@@ -52,6 +54,19 @@ function applySmartCrop(image, cropSize, callback) {
             .resize(cropSize.width, cropSize.height)
             .toBuffer(callback)
     }, callback);
+}
+
+function applyCrop(image, cropSize, callback) {
+    sharp(image)
+        .resize(cropSize.width, cropSize.height)
+        .toBuffer(callback)
+}
+
+function applyCoverResize(image, cropSize, callback) {
+    sharp(image)
+        .resize(cropSize.width, cropSize.height)
+        .max()
+        .toBuffer(callback)
 }
 
 exports.processImage = processImage;
