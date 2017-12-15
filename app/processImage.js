@@ -5,7 +5,7 @@ var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 
-function processImage(width, height, path, destPath, imageProcessType, processImageCallback) {
+function processImage(size, path, destPath, imageProcessType, processImageCallback) {
 
     // Run all the steps in sync with response of 1 step acting as input for other.
     // avoiding the callback structure
@@ -18,7 +18,7 @@ function processImage(width, height, path, destPath, imageProcessType, processIm
         function(image, callback){
             // Process the image as per the process type
             if (imageProcessType == 'smartcrop') {
-                applySmartCrop(image, width, height, callback);
+                applySmartCrop(image, size, callback);
             } else {
                 callback({}); // call with err
             }
@@ -34,8 +34,8 @@ function processImage(width, height, path, destPath, imageProcessType, processIm
 }
 
 
-function applySmartCrop(image, width, height, callback) {
-    smartcrop.crop(image, { width: width, height: height }).then(function(result) {
+function applySmartCrop(image, cropSize, callback) {
+    smartcrop.crop(image, cropSize).then(function(result) {
         var crop = result.topCrop;
         sharp(image)
             .extract({ width: crop.width, height: crop.height, left: crop.x, top: crop.y })

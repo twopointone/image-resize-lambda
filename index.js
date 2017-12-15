@@ -1,16 +1,34 @@
 var config = require('./config');
 var ProcessImage = require('./app/processImage');
 
-exports.handler = function(event, context, callback) {
+function resolveParamsFromKey(key) {
     const key = event.queryStringParameters.key;
     const match = key.match(/images\/(\d+)x(\d+)\/(\w+)\/(.*)/);
 
-    const width = parseInt(match[1], 10);
-    const height = parseInt(match[2], 10);
+    if (match.length > 0) {
+        const width = parseInt(match[1], 10);
+        const height = parseInt(match[2], 10);
 
-    // crop-type
-    const cropType = match[3];
-    const inputBucketKey = match[4];
+        // crop-type
+        const cropType = match[3];
+        const inputBucketKey = match[4];
+
+        return {
+            size: {
+                width: width,
+                height: height
+            },
+            cropType: cropType,
+            inputBucketKey: inputBucketKey,
+            destPath: key.replace('/', '')  // remove the first '/' from the bucket
+        }
+    } else {
+        return null;
+    }
+}
+
+exports.handler = function(event, context, callback) {
+    var params = resolveParamsFromKey(event.queryStringParameters.key);
 
     function processImageCallback(err, data) {
         if (!err){
@@ -22,13 +40,18 @@ exports.handler = function(event, context, callback) {
         } else {
             callback(null, {
                 statusCode: '405',
-                body: cropType + ' method not supported'
+                body: cropType + ' Method not supported'
             });
         }
     }
 
-    ProcessImage.processImage(width, height, inputBucketKey, key.replace('/', ''), cropType, processImageCallback);
-
-    // applySmartCrop.applySmartCrop(src, 'flower-square.jpg', 128, 128);
+    if ( params ){
+        ProcessImage.processImage(params.size, params.inputBucketKey,
+            params.destPath, params.cropType, processImageCallback);
+    } else {
+        callback(null, {
+            statusCode: '404'
+        })
+    }
 
 };
