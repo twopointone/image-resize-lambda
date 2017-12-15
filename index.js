@@ -2,11 +2,13 @@ var config = require('./config');
 var ProcessImage = require('./app/processImage');
 
 function resolveParamsFromKey(key) {
-    const regexMatch = key.match(/images\/((\d+)x(\d+)\/)?([a-zA-Z]+)\/(.*)/);
+    const regexMatch = key.match(/images\/((\d+)x(\d+)?\/)?([a-zA-Z]+)\/(.*)/);
 
     if (regexMatch && regexMatch.length > 0) {
         const width = parseInt(regexMatch[2], 10);
-        const height = parseInt(regexMatch[3], 10);
+
+        // pass height as undefined or null if not present to auto calculate.
+        const height = regexMatch[3] ? parseInt(regexMatch[3], 10) : regexMatch[3];
 
         // crop-type
         const cropType = regexMatch[4];
