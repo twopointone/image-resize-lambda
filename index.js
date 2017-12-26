@@ -8,7 +8,7 @@ function resolveParamsFromKey(key) {
         const width = parseInt(regexMatch[2], 10);
 
         // pass height as undefined or null if not present to auto calculate.
-        const height = regexMatch[3] ? parseInt(regexMatch[3], 10) : regexMatch[3];
+        const height = regexMatch[3] ? parseInt(regexMatch[3], 10) : null;
 
         // crop-type
         const cropType = regexMatch[4];
