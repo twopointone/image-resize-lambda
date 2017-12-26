@@ -49,15 +49,15 @@ function getCropFunction(cropType) {
 function applySmartCrop(image, cropSize, callback) {
   const img = sharp(image);
 
-  var height = cropSize.height;
-  if (!height){
+  if (!(cropSize.height && cropSize.width)){
     var asp_ratio;
 
     img
     .metadata()
     .then(function(metadata) {
       asp_ratio = metadata.width/metadata.height;
-      cropSize.height = Math.round(cropSize.width/asp_ratio);
+      if (!cropSize.height) { cropSize.height = Math.round(cropSize.width/asp_ratio); }
+      if (!cropSize.width) { cropSize.width = Math.round(cropSize.height * asp_ratio);}
     })
   }
 
@@ -73,14 +73,15 @@ function applySmartCrop(image, cropSize, callback) {
 function applyCrop(image, cropSize, callback) {
   const img = sharp(image);
 
-  if (!cropSize.height){
+  if (!(cropSize.height && cropSize.width)){
     var asp_ratio;
 
     img
     .metadata()
     .then(function(metadata) {
       asp_ratio = metadata.width/metadata.height;
-      cropSize.height = Math.round(cropSize.width/asp_ratio);
+      if (!cropSize.height) { cropSize.height = Math.round(cropSize.width/asp_ratio); }
+      if (!cropSize.width) { cropSize.width = Math.round(cropSize.height * asp_ratio); }
     })
   }
 
@@ -92,14 +93,15 @@ function applyCrop(image, cropSize, callback) {
 function applyCoverResize(image, cropSize, callback) {
   const img = sharp(image);
 
-  if (!cropSize.height){
+  if (!(cropSize.height && cropSize.width)){
     var asp_ratio;
 
     img
     .metadata()
     .then(function(metadata) {
       asp_ratio = metadata.width/metadata.height;
-      cropSize.height = Math.round(cropSize.width/asp_ratio);
+      if (!cropSize.height) { cropSize.height = Math.round(cropSize.width/asp_ratio); }
+      if (!cropSize.width) { cropSize.width = Math.round(cropSize.height * asp_ratio); }
     })
   }
 
