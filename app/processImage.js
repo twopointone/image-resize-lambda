@@ -23,10 +23,13 @@ function processImage(size, path, destPath, imageProcessType, processImageCallba
             storage.storage.getFile(path, callback);
         },
         function(image, callback) {
+            validateImageCropSize(image, size, callback);
+        },
+        function(image, cropSize, callback, ) {
             // Process the image as per the process type
             var cropFunction = getCropFunction(imageProcessType);
             if (cropFunction) {
-                cropFunction(image, size, callback);
+                cropFunction(image, cropSize, callback);
             } else {
                 callback({}); // call with err
             }
@@ -45,70 +48,43 @@ function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
 }
 
+function validateImageCropSize(image, size, callback) {
+    if !(size.height && size.width
+    sharp(image)
+        .metadata()
+        .then(function(metadata) {
+            const asp_ratio = metadata.width/metadata.height;
+            if (!size.height) {
+                size.height = Math.round(size.width/asp_ratio);
+            }
+            if (!size.width) {
+                size.width = Math.round(size.height * asp_ratio);
+            }
+            callback(null, image, size)
+        })
+}
 
 function applySmartCrop(image, cropSize, callback) {
-  const img = sharp(image);
-
-  if (!(cropSize.height && cropSize.width)){
-    var asp_ratio;
-
-    img
-    .metadata()
-    .then(function(metadata) {
-      asp_ratio = metadata.width/metadata.height;
-      if (!cropSize.height) { cropSize.height = Math.round(cropSize.width/asp_ratio); }
-      if (!cropSize.width) { cropSize.width = Math.round(cropSize.height * asp_ratio);}
-    })
-  }
-
-  smartcrop.crop(image, cropSize).then(function(result) {
-      var crop = result.topCrop;
-      img
-        .extract({ width: crop.width, height: crop.height, left: crop.x, top: crop.y })
-        .resize(cropSize.width, cropSize.height)
-        .toBuffer(callback)
-  }, callback);
+    smartcrop.crop(image, cropSize).then(function(result) {
+        var crop = result.topCrop;
+        sharp(image)
+            .extract({ width: crop.width, height: crop.height, left: crop.x, top: crop.y })
+            .resize(cropSize.width, cropSize.height)
+            .toBuffer(callback)
+    }, callback);
 }
 
 function applyCrop(image, cropSize, callback) {
-  const img = sharp(image);
-
-  if (!(cropSize.height && cropSize.width)){
-    var asp_ratio;
-
-    img
-    .metadata()
-    .then(function(metadata) {
-      asp_ratio = metadata.width/metadata.height;
-      if (!cropSize.height) { cropSize.height = Math.round(cropSize.width/asp_ratio); }
-      if (!cropSize.width) { cropSize.width = Math.round(cropSize.height * asp_ratio); }
-    })
-  }
-
-  img
-    .resize(cropSize.width, cropSize.height)
-    .toBuffer(callback)
+    sharp(image)
+        .resize(cropSize.width, cropSize.height)
+        .toBuffer(callback)
 }
 
 function applyCoverResize(image, cropSize, callback) {
-  const img = sharp(image);
-
-  if (!(cropSize.height && cropSize.width)){
-    var asp_ratio;
-
-    img
-    .metadata()
-    .then(function(metadata) {
-      asp_ratio = metadata.width/metadata.height;
-      if (!cropSize.height) { cropSize.height = Math.round(cropSize.width/asp_ratio); }
-      if (!cropSize.width) { cropSize.width = Math.round(cropSize.height * asp_ratio); }
-    })
-  }
-
-  img
-    .resize(cropSize.width, cropSize.height)
-    .max()
-    .toBuffer(callback)
+    sharp(image)
+        .resize(cropSize.width, cropSize.height)
+        .max()
+        .toBuffer(callback)
 }
 
 function rawImage(image, cropSize, callback) {
