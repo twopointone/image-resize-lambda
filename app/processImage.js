@@ -25,7 +25,7 @@ function processImage(size, path, destPath, imageProcessType, processImageCallba
         function(image, callback) {
             validateImageCropSize(image, size, callback);
         },
-        function(image, cropSize, callback, ) {
+        function(image, cropSize, callback) {
             // Process the image as per the process type
             var cropFunction = getCropFunction(imageProcessType);
             if (cropFunction) {
@@ -49,19 +49,24 @@ function getCropFunction(cropType) {
 }
 
 function validateImageCropSize(image, size, callback) {
-    if !(size.height && size.width
-    sharp(image)
-        .metadata()
-        .then(function(metadata) {
-            const asp_ratio = metadata.width/metadata.height;
-            if (!size.height) {
-                size.height = Math.round(size.width/asp_ratio);
-            }
-            if (!size.width) {
-                size.width = Math.round(size.height * asp_ratio);
-            }
-            callback(null, image, size)
-        })
+    if (size.height && size.width) {
+        callback(null, image, size);
+    } else {
+        sharp(image)
+            .metadata()
+            .then(function(metadata) {
+                const asp_ratio = metadata.width/metadata.height;
+                if (!size.height) {
+                    size.height = Math.round(size.width/asp_ratio);
+                }
+                if (!size.width) {
+                    size.width = Math.round(size.height * asp_ratio);
+                }
+            })
+            .then(function(){
+                callback(null, image, size);
+            });
+    }
 }
 
 function applySmartCrop(image, cropSize, callback) {
