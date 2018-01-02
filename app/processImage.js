@@ -14,7 +14,6 @@ const functionMapping = {
 };
 
 function processImage(size, path, destPath, imageProcessType, processImageCallback) {
-
     // Run all the steps in sync with response of 1 step acting as input for other.
     // avoiding the callback structure
     // https://caolan.github.io/async/docs.html#waterfall
@@ -24,10 +23,13 @@ function processImage(size, path, destPath, imageProcessType, processImageCallba
             storage.storage.getFile(path, callback);
         },
         function(image, callback) {
+            validateImageCropSize(image, size, callback);
+        },
+        function(image, cropSize, callback) {
             // Process the image as per the process type
             var cropFunction = getCropFunction(imageProcessType);
             if (cropFunction) {
-                cropFunction(image, size, callback);
+                cropFunction(image, cropSize, callback);
             } else {
                 callback({}); // call with err
             }
@@ -46,6 +48,24 @@ function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
 }
 
+function validateImageCropSize(image, size, callback) {
+    if (size.height && size.width) {
+        callback(null, image, size);
+    } else {
+        sharp(image)
+            .metadata()
+            .then(function(metadata) {
+                const asp_ratio = metadata.width/metadata.height;
+                if (!size.height) {
+                    size.height = Math.round(size.width/asp_ratio);
+                }
+                if (!size.width) {
+                    size.width = Math.round(size.height * asp_ratio);
+                }
+                callback(null, image, size);
+            }, callback);
+    }
+}
 
 function applySmartCrop(image, cropSize, callback) {
     smartcrop.crop(image, cropSize).then(function(result) {
