@@ -27,7 +27,7 @@ exports.handler = function(event, context, callback) {
         var params = paramParser.processAllParse(parseArray, processorData.path);
         ProcessImage.processImage(key, params, processCallback);
     } else if (processorData.processor == 'raw') {
-        ProcessRaw.getRaw(key, processorData.path, processCallback);
+        ProcessRaw.processRaw(key, processorData.path, processCallback);
     } else {
         callback(null, {
             statusCode: '404'
