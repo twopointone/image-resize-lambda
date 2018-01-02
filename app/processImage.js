@@ -26,6 +26,9 @@ function processImage(key, imageParams, processImageCallback) {
             storage.storage.getFile(imageParams.path, callback);
         },
         function(image, callback) {
+            validateImageCropSize(image, imageParams.size, callback);
+        },
+        function(image, cropSize, callback) {
             // Process the image as per the process type
             var cropFunction = getCropFunction(imageParams.processType);
             if (cropFunction) {
@@ -48,6 +51,26 @@ function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
 }
 
+function validateImageCropSize(image, size, callback) {
+    sharp(image)
+        .metadata()
+        .then(function(metadata) {
+            const asp_ratio = metadata.width/metadata.height;
+            if (!size.height) {
+                size.height = Math.round(size.width/asp_ratio);
+            }
+            if (!size.width) {
+                size.width = Math.round(size.height * asp_ratio);
+            }
+            size.originalWidth = metadata.width;
+            size.originalHeight = metadata.height;
+            size.asp_ratio = asp_ratio;
+            // size.width = size.widthPlus ? size.width : Math.round(Math.min(size.width, metadata.width));
+            // size.height = size.heightPlus ? size.height : Math.round(Math.min(size.height, metadata.height));
+
+            callback(null, image, size);
+        }, callback);
+}
 
 function applySmartCrop(image, cropSize, callback) {
     smartcrop.crop(image, cropSize).then(function(result) {
@@ -60,9 +83,30 @@ function applySmartCrop(image, cropSize, callback) {
 }
 
 function applyCrop(image, cropSize, callback) {
+    var effectiveWidth = size.widthPlus ? size.width : Math.round(Math.min(size.width, metadata.width));
+    var effectiveHeight = size.heightPlus ? size.height : Math.round
+
     sharp(image)
         .resize(cropSize.width, cropSize.height)
         .toBuffer(callback)
+
+    var percntWidthInc = Math.round((cropSize.size - cropSize.originalWidth)/cropSize.size * 100);
+    var percntHeightInc = Math.round((cropSize.height - cropSize.originalHeight/cropSize.height * 100));
+        if (cropSize.widthPlus && cropSize.heightPlus){
+            sharp(image)
+                .resize(cropSize.width, cropSize.height)
+                .max()
+                .toBuffer(callback)
+        } else if (cropSize.widthPlus) {
+
+            var effectiveHeight = Math.round(Math.min(cropSize.height, size.originalHeight, cropSize.width/size.asp_ratio));
+
+            sharp(image)
+                .resize(cropSize.width, effectiveHeight)
+                .toBuffer(callback)
+        } else if (cropSize.heightPlus) {
+            var effectiveWidth = Math.round(Math.min(cropSize.width, ))
+        }
 }
 
 function applyCoverResize(image, cropSize, callback) {
@@ -94,8 +138,7 @@ function applyBlurEffect(image, cropSize, callback){
                 return applySmartCrop(image, cropSize, callback)
             } else if (metadata.width < cropSize.width && metadata.height > cropSize.height) {
                 overlayImg
-                    .resize(cropSize.width, cropSize.height)
-                    .max()
+                    .resize(metadata.width, cropSize.height)
             }
 
             overlayImg

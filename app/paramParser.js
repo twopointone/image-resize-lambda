@@ -29,7 +29,7 @@ function parseSize(key) {
     var splitArray = key.split('/');
     var regex = /(([a-zA-Z]+)\:(.*))/;
     var regexMatch = splitArray[0].match(regex);
-    var size = sizeParser(splitArray[0]);
+    var size = getSizeData(splitArray[0]);
 
     splitArray.splice(0, 1);
     var path = splitArray.join('/');
@@ -70,7 +70,7 @@ function parseProcessType(key) {
     }
 }
 
-function processAllParse(parseArray, key){
+function processAllParse(parseArray, key) {
     var params = {
         path:   key
     };
@@ -81,12 +81,12 @@ function processAllParse(parseArray, key){
     return params
 }
 
-function sizeParser(string) {
-    var regex = /(\+?)(\d+)x(\+?)(\d+)/;
+function getSizeData(string) {
+    var regex = /(\+?)(\d+)?x(\+?)(\d+)?/;
     var regexMatch = string.match(regex);
     if (regexMatch && regexMatch.length > 0) {
         const widthPlus = regexMatch[1] ? true : false;
-        const width = parseInt(regexMatch[2], 10);
+        const width = regexMatch[2] ? parseInt(regexMatch[2], 10): null;
         const heightPlus = regexMatch[3] ? true : false;
         const height = regexMatch[4] ? parseInt(regexMatch[4], 10) : null;
 
