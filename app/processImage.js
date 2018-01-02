@@ -82,33 +82,44 @@ function applySmartCrop(image, cropSize, callback) {
 }
 
 function applyCrop(image, cropSize, callback) {
-    var effectiveWidth = size.widthPlus ? size.width : Math.round(Math.min(size.width, metadata.width));
-    var effectiveHeight = size.heightPlus ? size.height : Math.round
+    // var effectiveWidth = size.widthPlus ? size.width : Math.round(Math.min(size.width, metadata.width));
+    // var effectiveHeight = size.heightPlus ? size.height : Math.round
+    //
+    // sharp(image)
+    //     .resize(cropSize.width, cropSize.height)
+    //     .toBuffer(callback)
+    //
+    // var percntWidthInc = Math.round((cropSize.size - cropSize.originalWidth)/cropSize.size * 100);
+    // var percntHeightInc = Math.round((cropSize.height - cropSize.originalHeight/cropSize.height * 100));
+    //     if (cropSize.widthPlus && cropSize.heightPlus){
+    //         sharp(image)
+    //             .resize(cropSize.width, cropSize.height)
+    //             .max()
+    //             .toBuffer(callback)
+    //     } else if (cropSize.widthPlus) {
+    //
+    //         var effectiveHeight = Math.round(Math.min(cropSize.height, size.originalHeight, cropSize.width/size.asp_ratio));
+    //
+    //         sharp(image)
+    //             .resize(cropSize.width, effectiveHeight)
+    //             .toBuffer(callback)
+    //     } else if (cropSize.heightPlus) {
+    //         var effectiveWidth = Math.round(Math.min(cropSize.width, ))
+    //     }
 
-    sharp(image)
-        .resize(cropSize.width, cropSize.height)
-        .toBuffer(callback)
-
-    var percntWidthInc = Math.round((cropSize.size - cropSize.originalWidth)/cropSize.size * 100);
-    var percntHeightInc = Math.round((cropSize.height - cropSize.originalHeight/cropSize.height * 100));
-        if (cropSize.widthPlus && cropSize.heightPlus){
-            sharp(image)
-                .resize(cropSize.width, cropSize.height)
-                .max()
-                .toBuffer(callback)
-        } else if (cropSize.widthPlus) {
-
-            var effectiveHeight = Math.round(Math.min(cropSize.height, size.originalHeight, cropSize.width/size.asp_ratio));
-
-            sharp(image)
-                .resize(cropSize.width, effectiveHeight)
-                .toBuffer(callback)
-        } else if (cropSize.heightPlus) {
-            var effectiveWidth = Math.round(Math.min(cropSize.width, ))
+        if (cropSize.widthPlus || cropSize.heightPlus) {
+            applySmartCrop(image, cropSize, callback)
+        } else {
+            if (cropSize.width < cropSize.originalWidth || cropSize.height < cropSize.originalHeight) {
+                applySmartCrop(image, cropSize, callback)
+            } else {
+                callback(null, image, {});
+            }
         }
 }
 
 function applyCoverResize(image, cropSize, callback) {
+
     if (cropSize.widthPlus || cropSize.heightPlus) {
         sharp(image)
             .resize(cropSize.width, cropSize.height)
@@ -134,13 +145,33 @@ function applyBlurEffect(image, cropSize, callback){
         .metadata()
         .then(function(metadata) {
             // calculating optimal required cropSize height
-            cropSize.height = Math.round(Math.min(cropSize.height, metadata.height * (cropSize.width / metadata.width), metadata.height));
 
-            if (metadata.width >= cropSize.width) {
+            if (cropSize.widthPlus && cropSize.heightPlus) {
                 return applySmartCrop(image, cropSize, callback)
-            } else if (metadata.width < cropSize.width && metadata.height > cropSize.height) {
-                overlayImg
-                    .resize(metadata.width, cropSize.height)
+            } else if (cropSize.widthPlus && !cropSize.heightPlus){
+                cropSize.height = Math.round(Math.min(cropSize.height, metadata.height * (cropSize.width / metadata.width), metadata.height));
+
+                if (metadata.width >= cropSize.width) {
+                    return applySmartCrop(image, cropSize, callback)
+                } else if (metadata.width < cropSize.width && metadata.height > cropSize.height) {
+                    overlayImg
+                        .resize(metadata.width, cropSize.height)
+                }
+            } else if (!cropSize.widthPlus && cropSize.heightPlus) {
+                cropSize.width = Math.round(Math.min(cropSize.width, metadata.width * (cropSize.width / metadata.height), metadata.width));
+
+                if (metadata.height >= cropSize.height) {
+                    return applySmartCrop(image, cropSize, callback)
+                } else if (metadata.height < cropSize.height && metadata.width > cropSize.width) {
+                    overlayImg
+                        .resize(cropSize.width, metadata.height)
+                }
+            } else {
+                if (cropSize.width < cropSize.originalWidth || cropSize.height < cropSize.originalHeight) {
+                    overlayImg
+                        .resize(cropSize.width, cropSize.height)
+                        .max()
+                }
             }
 
             overlayImg
