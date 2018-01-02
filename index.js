@@ -1,36 +1,10 @@
 var config = require('./config');
 var ProcessImage = require('./app/processImage');
-
-function resolveParamsFromKey(key) {
-    const regexMatch = key.match(/images\/((\d+)x(\d+)?\/)?([a-zA-Z]+)\/(.*)/);
-
-    if (regexMatch && regexMatch.length > 0) {
-        const width = parseInt(regexMatch[2], 10);
-
-        // pass height as undefined or null if not present to auto calculate.
-        const height = regexMatch[3] ? parseInt(regexMatch[3], 10) : regexMatch[3];
-
-        // crop-type
-        const cropType = regexMatch[4];
-        const inputBucketKey = regexMatch[5];
-
-        return {
-            size: {
-                width: width,
-                height: height
-            },
-            cropType: cropType,
-            inputBucketKey: inputBucketKey,
-            destPath: key.replace('/', '')  // remove the first '/' from the bucket
-        }
-    } else {
-        return null;
-    }
-}
+var paramParser = require('./app/paramParser');
 
 exports.handler = function(event, context, callback) {
     const key = event.queryStringParameters.key;
-    var params = resolveParamsFromKey(key);
+    var processorData = paramParser.processAllParse(['processor'], key);
 
     function processImageCallback(err, data) {
         if (!err){
@@ -47,9 +21,10 @@ exports.handler = function(event, context, callback) {
         }
     }
 
-    if ( params ){
-        ProcessImage.processImage(params.size, params.inputBucketKey,
-            params.destPath, params.cropType, processImageCallback);
+    if (processorData.processor == 'images' ){
+        var parseArray = ['size','processType'];
+        var params = paramParser.processAllParse(parseArray, processorData.path);
+        ProcessImage.processImage(key, params, processImageCallback);
     } else {
         callback(null, {
             statusCode: '404'

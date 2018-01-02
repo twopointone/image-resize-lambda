@@ -10,10 +10,12 @@ const functionMapping = {
     'smartcrop': applySmartCrop,
     'crop': applyCrop,
     'cover': applyCoverResize,
-    'raw': rawImage
+    'raw': rawImage,
+    'blur': applyBlurEffect,
 };
 
-function processImage(size, path, destPath, imageProcessType, processImageCallback) {
+//params includes size, path, destPath, imageProcessType
+function processImage(key, imageParams, processImageCallback) {
 
     // Run all the steps in sync with response of 1 step acting as input for other.
     // avoiding the callback structure
@@ -21,20 +23,20 @@ function processImage(size, path, destPath, imageProcessType, processImageCallba
     async.waterfall([
         function(callback) {
             // Get the file from the disk or S3
-            storage.storage.getFile(path, callback);
+            storage.storage.getFile(imageParams.path, callback);
         },
         function(image, callback) {
             // Process the image as per the process type
-            var cropFunction = getCropFunction(imageProcessType);
+            var cropFunction = getCropFunction(imageParams.processType);
             if (cropFunction) {
-                cropFunction(image, size, callback);
+                cropFunction(image, imageParams.size, callback);
             } else {
                 callback({}); // call with err
             }
         },
         function(data, fileInfo, callback) {
             // save file to S3
-            storage.storage.saveFile(destPath, data, fileInfo, callback);
+            storage.storage.saveFile(key.replace('/',''), data, fileInfo, callback);
         }
     ], function(err, result) {
         // this function is always executed both in case of err and success as well
@@ -76,6 +78,35 @@ function rawImage(image, cropSize, callback) {
         return ;
     }
     callback(null, image, {});
+}
+
+function applyBlurEffect(image, cropSize, callback){
+    let blurImg = sharp(image);
+    let overlayImg = sharp(image);
+
+    blurImg
+        .metadata()
+        .then(function(metadata) {
+            // calculating optimal required cropSize height
+            cropSize.height = Math.round(Math.min(cropSize.height, metadata.height * (cropSize.width / metadata.width), metadata.height));
+
+            if (metadata.width >= cropSize.width) {
+                return applySmartCrop(image, cropSize, callback)
+            } else if (metadata.width < cropSize.width && metadata.height > cropSize.height) {
+                overlayImg
+                    .resize(cropSize.width, cropSize.height)
+                    .max()
+            }
+
+            overlayImg
+                .toBuffer(function(err, data, info) {
+                    blurImg
+                        .resize(cropSize.width, cropSize.height)
+                        .blur(18)
+                        .overlayWith(data)
+                        .toBuffer(callback);
+                });
+            });
 }
 
 exports.processImage = processImage;
