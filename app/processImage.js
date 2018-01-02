@@ -62,10 +62,8 @@ function validateImageCropSize(image, size, callback) {
                 if (!size.width) {
                     size.width = Math.round(size.height * asp_ratio);
                 }
-            })
-            .then(function(){
                 callback(null, image, size);
-            });
+            }, callback);
     }
 }
 
