@@ -10,7 +10,6 @@ const functionMapping = {
     'smartcrop': applySmartCrop,
     'crop': applyCrop,
     'cover': applyCoverResize,
-    'raw': rawImage,
     'blur': applyBlurEffect,
 };
 
@@ -110,18 +109,21 @@ function applyCrop(image, cropSize, callback) {
 }
 
 function applyCoverResize(image, cropSize, callback) {
-    sharp(image)
-        .resize(cropSize.width, cropSize.height)
-        .max()
-        .toBuffer(callback)
-}
-
-function rawImage(image, cropSize, callback) {
-    if (cropSize.width || cropSize.height) {
-        callback({}); // raise error if height or width is provided with rawType
-        return ;
+    if (cropSize.widthPlus || cropSize.heightPlus) {
+        sharp(image)
+            .resize(cropSize.width, cropSize.height)
+            .max()
+            .toBuffer(callback)
+    } else {
+        if (cropSize.width < cropSize.originalWidth || cropSize.height < cropSize.originalHeight) {
+            sharp(image)
+                .resize(cropSize.width, cropSize.height)
+                .max()
+                .toBuffer(callback)
+        } else {
+            callback(null, image, {});
+        }
     }
-    callback(null, image, {});
 }
 
 function applyBlurEffect(image, cropSize, callback){
