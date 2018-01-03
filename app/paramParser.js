@@ -16,12 +16,16 @@ function parseProcessor(key) {
     var regex = /(images|pdf|raw)/;
     var regexMatch = splitArray[0].match(regex);
 
-    splitArray.splice(0, 1);
-    var path = splitArray.join('/');
+    if (regexMatch && regexMatch.length > 0) {
+        splitArray.splice(0, 1);
+        var path = splitArray.join('/');
 
-    return {
-        processor: regexMatch[0],
-        path: path
+        return {
+            processor: regexMatch[0],
+            path: path
+        }
+    } else {
+        return null
     }
 }
 

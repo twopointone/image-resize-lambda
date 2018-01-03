@@ -4,6 +4,8 @@ var paramParser = require('./app/paramParser');
 var ProcessRaw = require('./app/processRaw');
 
 exports.handler = function(event, context, callback) {
+
+
     const key = event.queryStringParameters.key;
     var processorData = paramParser.processAllParse(['processor'], key);
 
@@ -22,12 +24,18 @@ exports.handler = function(event, context, callback) {
         }
     }
 
-    if (processorData.processor == 'images') {
-        var parseArray = ['size','processType'];
-        var params = paramParser.processAllParse(parseArray, processorData.path);
-        ProcessImage.processImage(key, params, processCallback);
-    } else if (processorData.processor == 'raw') {
-        ProcessRaw.processRaw(key, processorData.path, processCallback);
+    if (processorData){
+        if (processorData.processor == 'images') {
+            var parseArray = ['size','processType'];
+            var params = paramParser.processAllParse(parseArray, processorData.path);
+            ProcessImage.processImage(key, params, processCallback);
+        } else if (processorData.processor == 'raw') {
+            ProcessRaw.processRaw(key, processorData.path, processCallback);
+        } else {
+            callback(null, {
+                statusCode: '404'
+            })
+        }
     } else {
         callback(null, {
             statusCode: '404'
