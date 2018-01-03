@@ -63,9 +63,6 @@ function validateImageCropSize(image, size, callback) {
             }
             size.originalWidth = metadata.width;
             size.originalHeight = metadata.height;
-            size.asp_ratio = asp_ratio;
-            // size.width = size.widthPlus ? size.width : Math.round(Math.min(size.width, metadata.width));
-            // size.height = size.heightPlus ? size.height : Math.round(Math.min(size.height, metadata.height));
 
             callback(null, image, size);
         }, callback);
@@ -82,40 +79,15 @@ function applySmartCrop(image, cropSize, callback) {
 }
 
 function applyCrop(image, cropSize, callback) {
-    // var effectiveWidth = size.widthPlus ? size.width : Math.round(Math.min(size.width, metadata.width));
-    // var effectiveHeight = size.heightPlus ? size.height : Math.round
-    //
-    // sharp(image)
-    //     .resize(cropSize.width, cropSize.height)
-    //     .toBuffer(callback)
-    //
-    // var percntWidthInc = Math.round((cropSize.size - cropSize.originalWidth)/cropSize.size * 100);
-    // var percntHeightInc = Math.round((cropSize.height - cropSize.originalHeight/cropSize.height * 100));
-    //     if (cropSize.widthPlus && cropSize.heightPlus){
-    //         sharp(image)
-    //             .resize(cropSize.width, cropSize.height)
-    //             .max()
-    //             .toBuffer(callback)
-    //     } else if (cropSize.widthPlus) {
-    //
-    //         var effectiveHeight = Math.round(Math.min(cropSize.height, size.originalHeight, cropSize.width/size.asp_ratio));
-    //
-    //         sharp(image)
-    //             .resize(cropSize.width, effectiveHeight)
-    //             .toBuffer(callback)
-    //     } else if (cropSize.heightPlus) {
-    //         var effectiveWidth = Math.round(Math.min(cropSize.width, ))
-    //     }
-
-        if (cropSize.widthPlus || cropSize.heightPlus) {
+    if (cropSize.widthPlus || cropSize.heightPlus) {
+        applySmartCrop(image, cropSize, callback)
+    } else {
+        if (cropSize.width < cropSize.originalWidth || cropSize.height < cropSize.originalHeight) {
             applySmartCrop(image, cropSize, callback)
         } else {
-            if (cropSize.width < cropSize.originalWidth || cropSize.height < cropSize.originalHeight) {
-                applySmartCrop(image, cropSize, callback)
-            } else {
-                callback(null, image, {});
-            }
+            callback(null, image, {});
         }
+    }
 }
 
 function applyCoverResize(image, cropSize, callback) {
@@ -137,15 +109,13 @@ function applyCoverResize(image, cropSize, callback) {
     }
 }
 
-function applyBlurEffect(image, cropSize, callback){
+function applyBlurEffect(image, cropSize, callback) {
     let blurImg = sharp(image);
     let overlayImg = sharp(image);
 
     blurImg
         .metadata()
         .then(function(metadata) {
-            // calculating optimal required cropSize height
-
             if (cropSize.widthPlus && cropSize.heightPlus) {
                 return applySmartCrop(image, cropSize, callback)
             } else if (cropSize.widthPlus && !cropSize.heightPlus){

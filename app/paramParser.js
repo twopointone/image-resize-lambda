@@ -72,7 +72,7 @@ function parseProcessType(key) {
 
 function processAllParse(parseArray, key) {
     var params = {
-        path:   key
+        path: key
     };
     parseArray.forEach(function(parser) {
         var method = getParserFunction(parser);
