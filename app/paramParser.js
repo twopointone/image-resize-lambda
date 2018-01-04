@@ -31,46 +31,62 @@ function parseProcessor(key) {
 
 function parseSize(key) {
     var splitArray = key.split('/');
-    var regex = /(([a-zA-Z]+)\:(.*))/;
+    var regex = /((size)\:(.*))/;
     var regexMatch = splitArray[0].match(regex);
-    var size = getSizeData(splitArray[0]);
 
-    splitArray.splice(0, 1);
-    var path = splitArray.join('/');
+    if (regexMatch && regexMatch.length > 0) {
+        var size = getSizeData(splitArray[0]);
 
-    return {
-        size: size,
-        path: path
+        splitArray.splice(0, 1);
+        var path = splitArray.join('/');
+
+        return {
+            size: size,
+            path: path
+        }
+    } else {
+        return null
     }
 }
 
 function parsePageNumber(key) {
     var splitArray = key.split('/');
-    var regex = /([a-zA-Z]+)\:(.*)/;
+    var regex = /(page)\:(.*)/;
     var regexMatch = splitArray[0].match(regex);
-    var pageNumber = parseInt(regexMatch[2], 10);
 
-    splitArray.splice(0, 1);
-    var path = splitArray.join('/');
+    if (regexMatch && regexMatch.length > 0) {
 
-    return {
-        pageNumber: pageNumber,
-        path: path
+        var pageNumber = parseInt(regexMatch[2], 10);
+
+        splitArray.splice(0, 1);
+        var path = splitArray.join('/');
+
+        return {
+            pageNumber: pageNumber,
+            path: path
+        }
+    } else {
+        return null
     }
 }
 
 function parseProcessType(key) {
     var splitArray = key.split('/');
-    var regex = /([a-zA-Z]+)\:(.*)/;
+    var regex = /(type)\:(.*)/;
     var regexMatch = splitArray[0].match(regex);
-    var processType = regexMatch[2];
 
-    splitArray.splice(0, 1);
-    var path = splitArray.join('/');
+    if (regexMatch && regexMatch.length > 0) {
+        var processType = regexMatch[2];
 
-    return {
-        processType: processType,
-        path: path
+        splitArray.splice(0, 1);
+        var path = splitArray.join('/');
+
+        return {
+            processType: processType,
+            path: path
+        }
+    } else {
+        return null
     }
 }
 
@@ -80,7 +96,12 @@ function processAllParse(parseArray, key) {
     };
     parseArray.forEach(function(parser) {
         var method = getParserFunction(parser);
-        params = Object.assign({},params, method(params.path));
+        var added_params = method(params.path);
+        if (added_params) {
+            params = Object.assign({},params, method(params.path));
+        } else {
+            return null
+        }
     });
     return params
 }
