@@ -94,15 +94,15 @@ function processAllParse(parseArray, key) {
     var params = {
         path: key
     };
-    parseArray.forEach(function(parser) {
-        var method = getParserFunction(parser);
+    for(var i=0; i<parseArray.length;i++){
+        var method = getParserFunction(parseArray[i]);
         var added_params = method(params.path);
-        if (added_params) {
+        if (added_params != null) {
             params = Object.assign({},params, method(params.path));
         } else {
             return null
         }
-    });
+    }
     return params
 }
 
