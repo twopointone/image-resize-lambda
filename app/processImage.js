@@ -104,19 +104,22 @@ function applyBlurEffect(image, cropSize, callback) {
     blurImg
         .metadata()
         .then(function(metadata) {
+            var smartcrop;
+            var resize;
+            var resize_with_max;
+
             if (cropSize.widthPlus && cropSize.heightPlus) {
                 //case where both the given width and height are required
-                return applySmartCrop(image, cropSize, callback)
+                smartcrop = true;
             } else if (cropSize.widthPlus && !cropSize.heightPlus) {
                 //case where the given width is required and height can be equal to or less than the given height
                 //there would be blur effect on the right and the left side of the image is the width is smaller
                 cropSize.height = Math.round(Math.min(cropSize.height, metadata.height * (cropSize.width / metadata.width), metadata.height));
 
                 if (metadata.width >= cropSize.width) {
-                    return applySmartCrop(image, cropSize, callback)
+                    smartcrop = true;
                 } else if (metadata.width < cropSize.width && metadata.height > cropSize.height) {
-                    overlayImg
-                        .resize(metadata.width, cropSize.height)
+                    resize = true;
                 }
             } else if (!cropSize.widthPlus && cropSize.heightPlus) {
                 //case where the given height is required and width can be equal to or less than the given width
@@ -124,20 +127,28 @@ function applyBlurEffect(image, cropSize, callback) {
                 cropSize.width = Math.round(Math.min(cropSize.width, metadata.width * (cropSize.width / metadata.height), metadata.width));
 
                 if (metadata.height >= cropSize.height) {
-                    return applySmartCrop(image, cropSize, callback)
+                    smartcrop = true;
                 } else if (metadata.height < cropSize.height && metadata.width > cropSize.width) {
-                    overlayImg
-                        .resize(cropSize.width, metadata.height)
+                    resize = true;
                 }
             } else {
                 //case where there is no strict constraint on the width or height
                 if (cropSize.width < cropSize.originalWidth || cropSize.height < cropSize.originalHeight) {
-                    overlayImg
-                        .resize(cropSize.width, cropSize.height)
-                        .max()
+                    resize_with_max = true;
                 } else {
                     callback(null, image, {});
                 }
+            }
+
+            if (smartcrop) {
+                return applySmartCrop(image, cropSize, callback)
+            } else if (resize) {
+                overlayImg
+                    .resize(cropSize.width, metadata.height)
+            } else if (resize_with_max) {
+                overlayImg
+                    .resize(cropSize.width, cropSize.height)
+                    .max()
             }
 
             overlayImg
