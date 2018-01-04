@@ -19,7 +19,7 @@ exports.handler = function(event, context, callback) {
         } else {
             callback(null, {
                 statusCode: '405',
-                body: params.cropType + ' Method not supported'
+                body: 'Method not supported'
             });
         }
     }

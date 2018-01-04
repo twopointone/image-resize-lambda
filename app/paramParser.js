@@ -98,7 +98,7 @@ function getSizeData(string) {
             width: width,
             height: height,
             widthPlus: widthPlus,
-            heightPlus, heightPlus
+            heightPlus: heightPlus
         }
     }
     return null
