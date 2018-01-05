@@ -137,6 +137,7 @@ function applyBlurEffect(image, cropSize, callback) {
                     resize_with_max = true;
                 } else {
                     callback(null, image, {});
+                    return
                 }
             }
 
