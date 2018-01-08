@@ -6,7 +6,7 @@ image:
 	docker build --tag amazonlinux:nodejs .
 
 package: image
-	mkdir -p dist/build && cp -r app index.js config.js package.json .env dist/build/
+	mkdir -p dist/build && cp -r app index.js config.js package.json dist/build/
 	docker run --rm --volume ${PWD}/dist/build:/build amazonlinux:nodejs npm install --production
 
 dist: package

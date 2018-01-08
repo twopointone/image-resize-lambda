@@ -10,18 +10,22 @@ function processRaw(path, destPath, callback) {
     async.waterfall([
         function(callback) {
             // Get the file from the disk or S3
+            console.log("Calling storage processor");
             storage.storage.getFile(path, callback);
         },
         function(file, callback) {
+            console.log("Getting raw file");
             getRaw(file, callback)
         },
         function(data, fileInfo, callback) {
             // save file to S3
+            console.log("Saving file to storage");
             storage.storage.saveFile(destPath, data, fileInfo, callback);
         }
-    ], function(err, result) {
+    ], function(err, data) {
         // this function is always executed both in case of err and success as well
-        callback(err, result);
+        console.log("Error raised while Processing raw File, Error=", err, ", data=", data);
+        callback(err, data);
     });
 }
 
