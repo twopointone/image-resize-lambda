@@ -124,7 +124,7 @@ function applyBlurEffect(image, cropSize, callback) {
             } else if (!cropSize.widthPlus && cropSize.heightPlus) {
                 //case where the given height is required and width can be equal to or less than the given width
                 //there would be blur effect on the top and the bottom of the image is the height is smaller
-                cropSize.width = Math.round(Math.min(cropSize.width, metadata.width * (cropSize.width / metadata.height), metadata.width));
+                cropSize.width = Math.round(Math.min(cropSize.width, metadata.width * (cropSize.height / metadata.height), metadata.width));
 
                 if (metadata.height >= cropSize.height) {
                     smartcrop = true;
