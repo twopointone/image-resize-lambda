@@ -10,11 +10,12 @@ const functionMapping = {
     'smartcrop': applySmartCrop,
     'crop': applyCrop,
     'cover': applyCoverResize,
-    'blur': applyBlurEffect,
+    'blur': applyBlurEffect
 };
 
 //params includes size, path, destPath, imageProcessType
 function processImage(key, imageParams, processImageCallback) {
+    console.log("Processing image called with key=", key, ", imageParams=", imageParams);
 
     // Run all the steps in sync with response of 1 step acting as input for other.
     // avoiding the callback structure
@@ -22,27 +23,33 @@ function processImage(key, imageParams, processImageCallback) {
     async.waterfall([
         function(callback) {
             // Get the file from the disk or S3
+            console.log("Calling storage processor");
             storage.storage.getFile(imageParams.path, callback);
         },
         function(image, callback) {
+            console.log("Validating Crop Size");
             validateImageCropSize(image, imageParams.size, callback);
         },
         function(image, cropSize, callback) {
             // Process the image as per the process type
             var cropFunction = getCropFunction(imageParams.processType);
             if (cropFunction) {
+                console.log("Calling crop function for processType=", imageParams.processType);
                 cropFunction(image, imageParams.size, callback);
             } else {
+                console.log("Crop function not found for the processType=", imageParams.processType, ". Raising Error");
                 callback({}); // call with err
             }
         },
         function(data, fileInfo, callback) {
             // save file to S3
+            console.log("Saving file to storage");
             storage.storage.saveFile(key.replace('/',''), data, fileInfo, callback);
         }
-    ], function(err, result) {
+    ], function(err, data) {
         // this function is always executed both in case of err and success as well
-        processImageCallback(err, result);
+        console.log("Error raised while Processing raw File, Error=", err, ", data=", data);
+        processImageCallback(err, data);
     });
 }
 
@@ -137,7 +144,7 @@ function applyBlurEffect(image, cropSize, callback) {
                     resize_with_max = true;
                 } else {
                     callback(null, image, {});
-                    return
+                    return;
                 }
             }
 
