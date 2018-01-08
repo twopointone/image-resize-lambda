@@ -115,10 +115,8 @@ function getSizeData(string) {
         var heightPlus = null;
         var widthPlus = null;
 
-        if (regexMatch[4]) {
-            heightPlus = regexMatch[4] === 'h' || regexMatch[4] === 'b';
-            widthPlus = regexMatch[4] === 'w' || regexMatch[4] === 'b';
-        }
+        heightPlus = regexMatch[4] === 'h' || regexMatch[4] === 'b';
+        widthPlus = regexMatch[4] === 'w' || regexMatch[4] === 'b';
 
         return {
             width: width,
