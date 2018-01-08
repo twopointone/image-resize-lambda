@@ -107,13 +107,16 @@ function processAllParse(parseArray, key) {
 }
 
 function getSizeData(string) {
-    var regex = /(\+?)(\d+)?x(\+?)(\d+)?/;
+    var regex = /(\d+)?x(\d+)?(\:extend:([w|h|b]))?/;
     var regexMatch = string.match(regex);
     if (regexMatch && regexMatch.length > 0) {
-        const widthPlus = regexMatch[1] ? true : false;
-        const width = regexMatch[2] ? parseInt(regexMatch[2], 10): null;
-        const heightPlus = regexMatch[3] ? true : false;
-        const height = regexMatch[4] ? parseInt(regexMatch[4], 10) : null;
+        const width = regexMatch[1] ? parseInt(regexMatch[1], 10): null;
+        const height = regexMatch[2] ? parseInt(regexMatch[2], 10) : null;
+        var heightPlus = null;
+        var widthPlus = null;
+
+        heightPlus = regexMatch[4] === 'h' || regexMatch[4] === 'b';
+        widthPlus = regexMatch[4] === 'w' || regexMatch[4] === 'b';
 
         return {
             width: width,
