@@ -145,7 +145,7 @@ function applyBlurEffect(image, cropSize, callback) {
                 return applySmartCrop(image, cropSize, callback)
             } else if (resize) {
                 overlayImg
-                    .resize(cropSize.width, metadata.height)
+                    .resize(cropSize.width, cropSize.height)
             } else if (resize_with_max) {
                 overlayImg
                     .resize(cropSize.width, cropSize.height)
