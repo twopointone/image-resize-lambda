@@ -38,5 +38,10 @@ variables create a copy of .env.sample with name .env and replace the values.
 
 1. This can be cropped and accessed using the url. 
 
-        localhost:3000/images/200x200/smartcrop/abc/xyz.jpeg
-        localhost:<port>/image/<width>x<height>/smartcrop/<path_in_inputdir>
+        images - manipulation
+        localhost:3000/images/size:200x200:extend:b/type:crop/xyz.jpeg
+        localhost:<port>/images/size:<Width>x<Height>:extend:<h/w/b>(optional)/type:<crop/cover/blur>/<path>
+        
+        fetching raw files
+        localhost:3000/raw/images/xyz.jpeg
+        
