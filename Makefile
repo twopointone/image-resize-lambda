@@ -1,3 +1,4 @@
+MAKE_FILE_DIR=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 .PHONY: all image package dist clean
 
 all: package
@@ -7,7 +8,7 @@ image:
 
 package: image
 	mkdir -p dist/build && cp -r app index.js config.js package.json dist/build/
-	docker run --rm --volume ${PWD}/dist/build:/build amazonlinux:nodejs npm install --production
+	docker run --rm --volume ${MAKE_FILE_DIR}/dist/build:/build amazonlinux:nodejs npm install --production
 
 dist: package
 	mkdir -p dist/lambda-package
