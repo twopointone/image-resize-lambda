@@ -31,10 +31,12 @@ function saveFile(destKey, imageBufferData, fileInfo, saveFileCallBack) {
         console.log("content type not found from fileInfo. using file Extension=", fileExt, ", contentType=", contentType);
     }
 
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
     S3.putObject({
         Body: imageBufferData,
         Bucket: config.OUTPUT_BUCKET,
         Key: destKey,
+        ACL: 'public-read',
         CacheControl: "max-age=" + config.S3_MAX_AGE,
         ContentType: contentType ? contentType : ''
     }, function (err, data) {
