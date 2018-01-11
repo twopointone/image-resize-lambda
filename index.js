@@ -43,7 +43,7 @@ exports.handler = function(event, context, callback) {
         if (imageProcessor && params) {
             ProcessImage.processImage(key, params, processCallback);
         } else if (rawProcessor) {
-            ProcessRaw.processRaw(processorData.path.split('/')[1], key.replace('/',''), processCallback);
+            ProcessRaw.processRaw(processorData.path, key.replace('/',''), processCallback);
         } else {
             console.log("Image processor or raw processor not found in request.");
             callback(null, {
