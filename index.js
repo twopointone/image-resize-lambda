@@ -31,7 +31,7 @@ exports.handler = function(event, context, callback) {
         var parseArray;
 
         if (processorData.processor == 'images') {
-            parseArray = ['size','processType'];
+            parseArray = ['size', 'extend', 'processType'];
             params = paramParser.processAllParse(parseArray, processorData.path);
             console.log("Parsed image processing params. params=", params);
             imageProcessor = true;
