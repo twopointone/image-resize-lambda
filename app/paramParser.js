@@ -1,8 +1,13 @@
+const minBlurRadius = 0.3;
+const maxBlurRadius = 1000;
+
 const functionMapping = {
     'processor': parseProcessor,
     'size': parseSize,
+    'extend': parseExtend,
+    'blur': parseBlur,
     'pageNumber': parsePageNumber,
-    'processType': parseProcessType
+    'processType': parseProcessType,
 };
 
 function getParserFunction(parser) {
@@ -29,6 +34,28 @@ function parseProcessor(key) {
     }
 }
 
+function parseBlur(key){
+    var splitArray = key.split('/');
+    var regex = /blur:(([0-9]*[.])?[0-9]+)/;
+    var regexMatch = splitArray[0].match(regex);
+    var blur = null;
+
+    if (regexMatch && regexMatch.length > 0) {
+        splitArray.splice(0, 1);
+
+        var blur = parseFloat(regexMatch[1])
+        blur = (blur < minBlurRadius) ? minBlurRadius : blur ;
+        blur = (blur > maxBlurRadius) ? maxBlurRadius : blur ;
+    }
+
+    var path = splitArray.join('/');
+
+    return {
+        blur: blur,
+        path: path
+    }
+}
+
 function parseSize(key) {
     var splitArray = key.split('/');
     var regex = /((size)\:(.*))/;
@@ -46,6 +73,29 @@ function parseSize(key) {
         }
     } else {
         return null
+    }
+}
+
+function parseExtend(key) {
+    var splitArray = key.split('/');
+    var regex = /extend:([w|h|b])/;
+    var regexMatch = splitArray[0].match(regex);
+
+    var heightPlus = null;
+    var widthPlus = null;
+
+    if (regexMatch && regexMatch.length > 0) {
+        splitArray.splice(0, 1);
+
+        heightPlus = regexMatch[1] === 'h' || regexMatch[1] === 'b';
+        widthPlus = regexMatch[1] === 'w' || regexMatch[1] === 'b';
+    }
+
+    var path = splitArray.join('/');
+
+    return {
+        extend: {heightPlus: heightPlus, widthPlus: widthPlus},
+        path: path
     }
 }
 
@@ -103,26 +153,24 @@ function processAllParse(parseArray, key) {
             return null
         }
     }
+    //merging extend params into the size
+    if (params.hasOwnProperty("size") && params.hasOwnProperty("extend")) {
+        params.size = Object.assign({}, params.size, params.extend);
+    }
+
     return params
 }
 
 function getSizeData(string) {
-    var regex = /(\d+)?x(\d+)?(\:extend:([w|h|b]))?/;
+    var regex = /(\d+)?x(\d+)?/;
     var regexMatch = string.match(regex);
     if (regexMatch && regexMatch.length > 0) {
         const width = regexMatch[1] ? parseInt(regexMatch[1], 10): null;
         const height = regexMatch[2] ? parseInt(regexMatch[2], 10) : null;
-        var heightPlus = null;
-        var widthPlus = null;
-
-        heightPlus = regexMatch[4] === 'h' || regexMatch[4] === 'b';
-        widthPlus = regexMatch[4] === 'w' || regexMatch[4] === 'b';
 
         return {
             width: width,
-            height: height,
-            widthPlus: widthPlus,
-            heightPlus: heightPlus
+            height: height
         }
     }
     return null
