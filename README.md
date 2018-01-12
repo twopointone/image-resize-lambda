@@ -50,15 +50,13 @@ variables create a copy of .env.sample with name .env and replace the values.
 
         localhost:<port>/raw/<path>
 
-1. Url dissection
-
-        parameters
+1. Url dissection parameters
 
         1. processor - image / raw for now
-        Processor parameter defines the way I want to process my file.
+        Processor parameter defines the way you want to process my file.
 
         2. size - <Width>x<Height>
-        Size parameter is the required dimensions with which I want to process my file. You can also input one of the two ie width eg. (100x) or height eg. (x100).
+        Size parameter is the required dimensions with which you want to process my file. You can also input one of the two ie width eg. (100x) or height eg. (x100).
 
         3. extend - (h/w/b)
         Extend parameter defines the dimensions in which you want to extend your image ie. h for height, w for width and b for base. Its an optional parameter and if not provided the image would not be enlarged above its natural size.
@@ -70,4 +68,4 @@ variables create a copy of .env.sample with name .env and replace the values.
         Type parameter defines the type of image processing we want to do with our image. This is a required parameter.
 
         6. path
-        The path of your file
+        The path of your file.
