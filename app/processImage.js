@@ -79,12 +79,14 @@ function validateImageCropSize(image, size, callback) {
 }
 
 function applyBlur(image, blur, callback) {
-    const img = sharp(image);
-
     if (blur) {
-        img.blur(blur)
+        sharp(image)
+            .blur(blur)
+            .toBuffer(callback)
+    } else {
+        sharp(image)
+            .toBuffer(callback)
     }
-    img.toBuffer(callback)
 }
 
 function applySmartCrop(image, cropSize, callback) {
