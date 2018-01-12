@@ -1,9 +1,13 @@
+const minBlurRadius = 0.3;
+const maxBlurRadius = 1000;
+
 const functionMapping = {
     'processor': parseProcessor,
     'size': parseSize,
     'extend': parseExtend,
+    'blur': parseBlur,
     'pageNumber': parsePageNumber,
-    'processType': parseProcessType
+    'processType': parseProcessType,
 };
 
 function getParserFunction(parser) {
@@ -27,6 +31,28 @@ function parseProcessor(key) {
         }
     } else {
         return null
+    }
+}
+
+function parseBlur(key){
+    var splitArray = key.split('/');
+    var regex = /blur:(([0-9]*[.])?[0-9]+)/;
+    var regexMatch = splitArray[0].match(regex);
+    var blur = null;
+
+    if (regexMatch && regexMatch.length > 0) {
+        splitArray.splice(0, 1);
+
+        var blur = parseFloat(regexMatch[1])
+        blur = (blur < minBlurRadius) ? minBlurRadius : blur ;
+        blur = (blur > maxBlurRadius) ? maxBlurRadius : blur ;
+    }
+
+    var path = splitArray.join('/');
+
+    return {
+        blur: blur,
+        path: path
     }
 }
 
@@ -57,17 +83,15 @@ function parseExtend(key) {
 
     var heightPlus = null;
     var widthPlus = null;
-    var path = null;
 
     if (regexMatch && regexMatch.length > 0) {
         splitArray.splice(0, 1);
-        path = splitArray.join('/');
 
         heightPlus = regexMatch[1] === 'h' || regexMatch[1] === 'b';
         widthPlus = regexMatch[1] === 'w' || regexMatch[1] === 'b';
-    } else{
-        path = splitArray.join('/');
     }
+
+    var path = splitArray.join('/');
 
     return {
         extend: {heightPlus: heightPlus, widthPlus: widthPlus},
