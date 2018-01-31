@@ -40,7 +40,11 @@ function saveFile(destKey, imageBufferData, fileInfo, saveFileCallBack) {
         CacheControl: "max-age=" + config.S3_MAX_AGE,
         ContentType: contentType ? contentType : ''
     }, function (err, data) {
-        console.log("Error while saving file to s3. Error=", err, ", data=", data);
+        if (!err) {
+            console.log("Saved file to s3: destKey=", destKey)
+        } else {
+            console.log("Error while saving file to s3. Error=", err, ", data=", data);
+        }
         saveFileCallBack(err, data)
     });
 }

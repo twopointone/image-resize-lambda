@@ -23,8 +23,9 @@ function processRaw(path, destPath, callback) {
             storage.storage.saveFile(destPath, data, fileInfo, callback);
         }
     ], function(err, data) {
-        // this function is always executed both in case of err and success as well
-        console.log("Error raised while Processing raw File, Error=", err, ", data=", data);
+        if (err) {
+          console.log("Error raised while Processing raw File, Error=", err, ", data=", data);
+        }
         callback(err, data);
     });
 }

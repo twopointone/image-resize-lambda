@@ -47,8 +47,9 @@ function processImage(key, imageParams, processImageCallback) {
             storage.storage.saveFile(key.replace('/',''), data, fileInfo, callback);
         }
     ], function(err, data) {
-        // this function is always executed both in case of err and success as well
-        console.log("Error raised while Processing raw File, Error=", err, ", data=", data);
+        if(err) {
+          console.log("Error raised while Processing image, Error=", err, ", data=", data);
+        }
         processImageCallback(err, data);
     });
 }
