@@ -10,7 +10,7 @@ const functionMapping = {
     'smartcrop': applySmartCrop,
     'crop': applyCrop,
     'cover': applyCoverResize,
-    'blur': applyBlurEffect
+    'blurredframe': applyBlurredFrame
 };
 
 //params includes size, path, destPath, imageProcessType
@@ -42,10 +42,13 @@ function processImage(key, imageParams, processImageCallback) {
             }
         },
         function(data, fileInfo, callback) {
+            applyBlur(data, imageParams.blur, callback)
+        },
+        function(data, fileInfo, callback) {
             // save file to S3
             console.log("Saving file to storage");
             storage.storage.saveFile(key.replace('/',''), data, fileInfo, callback);
-        }
+        },
     ], function(err, data) {
         if(err) {
           console.log("Error raised while Processing image, Error=", err, ", data=", data);
@@ -74,6 +77,17 @@ function validateImageCropSize(image, size, callback) {
 
             callback(null, image, size);
         }, callback);
+}
+
+function applyBlur(image, blur, callback) {
+    if (blur) {
+        sharp(image)
+            .blur(blur)
+            .toBuffer(callback)
+    } else {
+        sharp(image)
+            .toBuffer(callback)
+    }
 }
 
 function applySmartCrop(image, cropSize, callback) {
@@ -105,7 +119,7 @@ function applyCoverResize(image, cropSize, callback) {
     }
 }
 
-function applyBlurEffect(image, cropSize, callback) {
+function applyBlurredFrame(image, cropSize, callback) {
     let blurImg = sharp(image);
     let overlayImg = sharp(image);
 
