@@ -27,6 +27,10 @@ function processImage(key, imageParams, processImageCallback) {
             storage.storage.getFile(imageParams.path, callback);
         },
         function(image, callback) {
+            console.log("Check orientation");
+            validateImageRotation(image, callback);
+        },
+        function(image, callback) {
             console.log("Validating Crop Size");
             validateImageCropSize(image, imageParams.size, callback);
         },
@@ -58,6 +62,18 @@ function processImage(key, imageParams, processImageCallback) {
 
 function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
+}
+
+function validateImageRotation(image, callback) {
+    sharp(image)
+        .rotate()
+        .toBuffer(function(err, data, info) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, data);
+            }
+        })
 }
 
 function validateImageCropSize(image, size, callback) {
