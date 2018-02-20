@@ -8,6 +8,7 @@ const functionMapping = {
     'blur': parseBlur,
     'pageNumber': parsePageNumber,
     'processType': parseProcessType,
+    'autoRotate': parseAutoRotate,
 };
 
 function getParserFunction(parser) {
@@ -52,6 +53,28 @@ function parseBlur(key){
 
     return {
         blur: blur,
+        path: path
+    }
+}
+
+function parseAutoRotate(key){
+    var splitArray = key.split('/');
+    var regex = /auto_rotate:(true|false)/;
+    var regexMatch = splitArray[0].match(regex);
+    var auto_rotate = true;
+
+    if (regexMatch && regexMatch.length > 0) {
+        splitArray.splice(0, 1);
+        var rotate = JSON.parse(regexMatch[1]);
+        if (rotate == false) {
+            auto_rotate = false;
+        }
+    }
+
+    var path = splitArray.join('/');
+
+    return {
+        auto_rotate: auto_rotate,
         path: path
     }
 }

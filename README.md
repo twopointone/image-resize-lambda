@@ -42,7 +42,7 @@ variables create a copy of .env.sample with name .env and replace the values.
 
         localhost:3000/images/size:200x200/extend:b/blur:5.2/type:crop/xyz.jpeg
 
-        localhost:<port>/images/size:<Width>x<Height>/extend:<h/w/b>(optional)/blur:<0.3 - 1000>(optional)/type:<crop/cover/blurredframe>/<path>
+        localhost:<port>/images/size:<Width>x<Height>/extend:<h/w/b>(optional)/blur:<0.3 - 1000>(optional)/auto_rotate:<true/false>(optional)/type:<crop/cover/blurredframe>/<path>
 
         fetching raw files
 
@@ -64,8 +64,11 @@ variables create a copy of .env.sample with name .env and replace the values.
         4. blur - number between 0.3 - 1000
         Blur parameter defines the blur radius with which you want to blur your image. Its also an optional parameter.
 
-        5. type - crop/cover/blurredframe
+        5. auto_rotate - (true/false)
+        auto_rotate parameter defines whether you want to apply auto rotate the image. Its default value is true.
+
+        6. type - crop/cover/blurredframe
         Type parameter defines the type of image processing we want to do with our image. This is a required parameter.
 
-        6. path
+        7. path
         The path of your file.
