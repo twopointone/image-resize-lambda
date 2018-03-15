@@ -65,10 +65,7 @@ function parseAutoRotate(key){
 
     if (regexMatch && regexMatch.length > 0) {
         splitArray.splice(0, 1);
-        var rotate = JSON.parse(regexMatch[1]);
-        if (rotate == false) {
-            auto_rotate = false;
-        }
+        auto_rotate = !(regexMatch[1].toLowerCase() == "false")
     }
 
     var path = splitArray.join('/');
