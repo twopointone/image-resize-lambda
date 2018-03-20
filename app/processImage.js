@@ -10,7 +10,7 @@ const functionMapping = {
     'smartcrop': applySmartCrop,
     'crop': applyCrop,
     'cover': applyCoverResize,
-    'blur': applyBlurEffect
+    'blurredframe': applyBlurredFrame
 };
 
 //params includes size, path, destPath, imageProcessType
@@ -25,6 +25,10 @@ function processImage(key, imageParams, processImageCallback) {
             // Get the file from the disk or S3
             console.log("Calling storage processor");
             storage.storage.getFile(imageParams.path, callback);
+        },
+        function(image, callback) {
+            console.log("Check orientation");
+            validateImageRotation(image, imageParams.auto_rotate, callback);
         },
         function(image, callback) {
             console.log("Validating Crop Size");
@@ -42,19 +46,39 @@ function processImage(key, imageParams, processImageCallback) {
             }
         },
         function(data, fileInfo, callback) {
+            applyBlur(data, imageParams.blur, callback)
+        },
+        function(data, fileInfo, callback) {
             // save file to S3
             console.log("Saving file to storage");
             storage.storage.saveFile(key.replace('/',''), data, fileInfo, callback);
-        }
+        },
     ], function(err, data) {
-        // this function is always executed both in case of err and success as well
-        console.log("Error raised while Processing raw File, Error=", err, ", data=", data);
+        if(err) {
+          console.log("Error raised while Processing image, Error=", err, ", data=", data);
+        }
         processImageCallback(err, data);
     });
 }
 
 function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
+}
+
+function validateImageRotation(image, auto_rotate, callback) {
+    if (auto_rotate){
+        sharp(image)
+            .rotate()
+            .toBuffer(function(err, data, info) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, data);
+                }
+            })
+    } else {
+        callback(null, image);
+    }
 }
 
 function validateImageCropSize(image, size, callback) {
@@ -73,6 +97,17 @@ function validateImageCropSize(image, size, callback) {
 
             callback(null, image, size);
         }, callback);
+}
+
+function applyBlur(image, blur, callback) {
+    if (blur) {
+        sharp(image)
+            .blur(blur)
+            .toBuffer(callback)
+    } else {
+        sharp(image)
+            .toBuffer(callback)
+    }
 }
 
 function applySmartCrop(image, cropSize, callback) {
@@ -104,7 +139,7 @@ function applyCoverResize(image, cropSize, callback) {
     }
 }
 
-function applyBlurEffect(image, cropSize, callback) {
+function applyBlurredFrame(image, cropSize, callback) {
     let blurImg = sharp(image);
     let overlayImg = sharp(image);
 
