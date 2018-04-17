@@ -32,8 +32,6 @@ exports.handler = function(event, context, callback) {
         var params;
         var parseArray;
 
-        console.log(processorData);
-
         if (processorData.processor == 'images') {
             parseArray = ['size', 'extend', 'blur', 'autoRotate', 'processType'];
             params = paramParser.processAllParse(parseArray, processorData.path);
