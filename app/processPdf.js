@@ -11,7 +11,6 @@ var mkdirp = require('mkdirp');
 //params includes size, path, destPath, imageProcessType
 function processPdf(destPath, remotePath, processPdfCallback) {
     console.log("Processing pdf called with key=", remotePath);
-    remotePath = remotePath.replace("/preview.png", "");
 
     // Run all the steps in sync with response of 1 step acting as input for other.
     // avoiding the callback structure
@@ -36,7 +35,7 @@ function processPdf(destPath, remotePath, processPdfCallback) {
         },
         function(imageData, callback) {
             // save file to S3
-            storage.storage.saveFile(destPath, imageData, {}, callback);
+            storage.storage.saveFile(destPath, imageData, {format: "image/png"}, callback);
         },
     ], function(err, data) {
         if(err) {
