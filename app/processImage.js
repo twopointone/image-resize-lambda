@@ -5,7 +5,6 @@ var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 
-
 const functionMapping = {
     'smartcrop': applySmartCrop,
     'crop': applyCrop,

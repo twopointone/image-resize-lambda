@@ -21,8 +21,7 @@
     "mime-types": "^2.1.17",
     "mkdirp": "^0.5.1",
     "smartcrop": "^1.1.1",
-    "smartcrop-sharp": "^1.0.5",
-    "pdf2pic": "^1.2.6"
+    "smartcrop-sharp": "^1.0.5"
   },
   "devDependencies": {
     "aws-sdk": "^2.168.0",

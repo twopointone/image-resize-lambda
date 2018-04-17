@@ -1,11 +1,9 @@
 var async = require('async');
 var request = require('request');
 var config = require('../config.js');
-var PDF2Pic = require('pdf2pic').default;
 var storage = require(config.STORAGE);
 const path = require('path');
-var fs = require('fs');
-var mkdirp = require('mkdirp');
+var gm = require('gm');
 
 
 //params includes size, path, destPath, imageProcessType
@@ -22,16 +20,8 @@ function processPdf(destPath, pdfParams, processPdfCallback) {
             storage.storage.getFile(pdfParams.path, callback);
         },
         function(pdfContent, callback) {
-            console.log("Saving PDF File");
-            savePdfFile(pdfParams.path, pdfContent, callback);
-        },
-        function(pdfPath, callback) {
             console.log("Creating PDF Preview");
-            createPdfPreview(pdfPath, pdfParams.page, callback);
-        },
-        function(imagePath, callback) {
-            console.log("Reading Image File");
-            readImageFile(imagePath, callback);
+            createPdfPreview(pdfContent, path.basename(destPath), pdfParams.page, callback);
         },
         function(imageData, callback) {
             // save file to S3
@@ -45,37 +35,8 @@ function processPdf(destPath, pdfParams, processPdfCallback) {
     });
 }
 
-function readImageFile(imagePath, callback){
-  fs.readFile(imagePath, function (err, imageData) {
-    fs.unlink(imagePath, function(){
-      callback(null, imageData);
-    });
-  })
-}
-
-function savePdfFile(destPath, pdfBufferData, callback){
-  var destFilePath = path.join(".tmp", destPath);
-  mkdirp.sync(path.dirname(destFilePath));
-  fs.writeFile(destFilePath, pdfBufferData);
-  callback(null, destFilePath);
-}
-
-function createPdfPreview(pdfPath, page, callback){
-  var converter = new PDF2Pic({
-    // density: 100,           // output pixels per inch
-    savename: path.basename(pdfPath),   // output file name
-    savedir: path.dirname(pdfPath),    // output file location
-    format: "png",          // output file format
-    // size: 600               // output size in pixels
-  });
-
-  converter.convert(pdfPath, [page]).
-  then(function(response){
-    console.log("image converted successfully");
-    fs.unlink(pdfPath, function(){
-      callback(null, response.path);
-    });
-  });
+function createPdfPreview(pdfContent, filename, page, callback){
+  gm(pdfContent, filename+ "[0]").toBuffer("PNG", callback);
 }
 
 exports.processPdf = processPdf;
