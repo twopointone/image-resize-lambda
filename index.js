@@ -2,6 +2,7 @@ var config = require('./config');
 var ProcessImage = require('./app/processImage');
 var paramParser = require('./app/paramParser');
 var ProcessRaw = require('./app/processRaw');
+var ProcessPdf = require('./app/processPdf');
 
 exports.handler = function(event, context, callback) {
     console.log("Lambda event Occurred, event=", event, ", context=", context);
@@ -27,14 +28,20 @@ exports.handler = function(event, context, callback) {
 
         var imageProcessor;
         var rawProcessor;
+        var pdfProcessor;
         var params;
         var parseArray;
+
+        console.log(processorData);
 
         if (processorData.processor == 'images') {
             parseArray = ['size', 'extend', 'blur', 'autoRotate', 'processType'];
             params = paramParser.processAllParse(parseArray, processorData.path);
             console.log("Parsed image processing params. params=", params);
             imageProcessor = true;
+        } else if (processorData.processor == 'pdf') {
+            console.log("Parsing raw pdfs");
+            pdfProcessor = true;
         } else if (processorData.processor == 'raw') {
             console.log("Parsing raw images");
             rawProcessor = true;
@@ -42,6 +49,8 @@ exports.handler = function(event, context, callback) {
 
         if (imageProcessor && params) {
             ProcessImage.processImage(key, params, processCallback);
+        } else if (pdfProcessor) {
+            ProcessPdf.processPdf(processorData.path, processCallback);
         } else if (rawProcessor) {
             ProcessRaw.processRaw(processorData.path, key.replace(/^\//, ''), processCallback);
         } else {

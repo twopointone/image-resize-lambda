@@ -1,6 +1,6 @@
 {
   "name": "image-resize-lambda",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A node package to resize images to be run on aws lambda",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,8 @@
     "mime-types": "^2.1.17",
     "mkdirp": "^0.5.1",
     "smartcrop": "^1.1.1",
-    "smartcrop-sharp": "^1.0.5"
+    "smartcrop-sharp": "^1.0.5",
+    "pdf2pic": "^1.2.6"
   },
   "devDependencies": {
     "aws-sdk": "^2.168.0",
