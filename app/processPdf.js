@@ -35,7 +35,7 @@ function processPdf(destPath, pdfParams, processPdfCallback) {
         },
         function(imageData, callback) {
             // save file to S3
-            storage.storage.saveFile(destPath, imageData, {format: "image/png"}, callback);
+            storage.storage.saveFile(destPath, imageData, {format: ".png"}, callback);
         },
     ], function(err, data) {
         if(err) {
