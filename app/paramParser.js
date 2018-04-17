@@ -136,7 +136,10 @@ function parsePageNumber(key) {
             path: path
         }
     } else {
-        return null
+      return {
+          page: 1,
+          path: key
+      }
     }
 }
 
