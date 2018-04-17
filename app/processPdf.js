@@ -9,7 +9,7 @@ var mkdirp = require('mkdirp');
 
 
 //params includes size, path, destPath, imageProcessType
-function processPdf(remotePath, processPdfCallback) {
+function processPdf(destPath, remotePath, processPdfCallback) {
     console.log("Processing pdf called with key=", remotePath);
     remotePath = remotePath.replace("/preview.png", "");
 
@@ -36,12 +36,13 @@ function processPdf(remotePath, processPdfCallback) {
         },
         function(imageData, callback) {
             // save file to S3
-            storage.storage.saveFile(path.join(remotePath, "preview.png"), imageData, {}, callback);
+            storage.storage.saveFile(destPath, imageData, {}, callback);
         },
     ], function(err, data) {
         if(err) {
           console.log("Error raised while Processing pdf, Error=", err, ", data=", data);
         }
+        processPdfCallback(err, data);
     });
 }
 

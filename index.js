@@ -50,7 +50,7 @@ exports.handler = function(event, context, callback) {
         if (imageProcessor && params) {
             ProcessImage.processImage(key, params, processCallback);
         } else if (pdfProcessor) {
-            ProcessPdf.processPdf(processorData.path, processCallback);
+            ProcessPdf.processPdf(key, processorData.path, processCallback);
         } else if (rawProcessor) {
             ProcessRaw.processRaw(processorData.path, key.replace(/^\//, ''), processCallback);
         } else {
