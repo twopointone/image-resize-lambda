@@ -38,7 +38,9 @@ exports.handler = function(event, context, callback) {
             console.log("Parsed image processing params. params=", params);
             imageProcessor = true;
         } else if (processorData.processor == 'pdf') {
-            console.log("Parsing raw pdfs");
+            parseArray = ['page'];
+            params = paramParser.processAllParse(parseArray, processorData.path);
+            console.log("Parsing raw pdfs", params);
             pdfProcessor = true;
         } else if (processorData.processor == 'raw') {
             console.log("Parsing raw images");
@@ -48,7 +50,7 @@ exports.handler = function(event, context, callback) {
         if (imageProcessor && params) {
             ProcessImage.processImage(key, params, processCallback);
         } else if (pdfProcessor) {
-            ProcessPdf.processPdf(key, processorData.path, processCallback);
+            ProcessPdf.processPdf(key, params, processCallback);
         } else if (rawProcessor) {
             ProcessRaw.processRaw(processorData.path, key.replace(/^\//, ''), processCallback);
         } else {

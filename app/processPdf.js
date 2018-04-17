@@ -9,8 +9,8 @@ var mkdirp = require('mkdirp');
 
 
 //params includes size, path, destPath, imageProcessType
-function processPdf(destPath, remotePath, processPdfCallback) {
-    console.log("Processing pdf called with key=", remotePath);
+function processPdf(destPath, pdfParams, processPdfCallback) {
+    console.log("Processing pdf called with key=", pdfParams.path);
 
     // Run all the steps in sync with response of 1 step acting as input for other.
     // avoiding the callback structure
@@ -19,15 +19,15 @@ function processPdf(destPath, remotePath, processPdfCallback) {
         function(callback) {
             // Get the file from the disk or S3
             console.log("Calling storage processor");
-            storage.storage.getFile(remotePath, callback);
+            storage.storage.getFile(pdfParams.path, callback);
         },
         function(pdfContent, callback) {
             console.log("Saving PDF File");
-            savePdfFile(remotePath, pdfContent, callback);
+            savePdfFile(pdfParams.path, pdfContent, callback);
         },
         function(pdfPath, callback) {
             console.log("Creating PDF Preview");
-            createPdfPreview(pdfPath, callback);
+            createPdfPreview(pdfPath, pdfParams.page, callback);
         },
         function(imagePath, callback) {
             console.log("Reading Image File");
@@ -60,9 +60,7 @@ function savePdfFile(destPath, pdfBufferData, callback){
   callback(null, destFilePath);
 }
 
-function createPdfPreview(pdfPath, callback){
-  console.log(pdfPath);
-
+function createPdfPreview(pdfPath, page, callback){
   var converter = new PDF2Pic({
     // density: 100,           // output pixels per inch
     savename: path.basename(pdfPath),   // output file name
@@ -71,7 +69,7 @@ function createPdfPreview(pdfPath, callback){
     // size: 600               // output size in pixels
   });
 
-  converter.convert(pdfPath).
+  converter.convert(pdfPath, [page]).
   then(function(response){
     console.log("image converted successfully");
     fs.unlink(pdfPath, function(){

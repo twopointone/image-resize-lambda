@@ -6,7 +6,7 @@ const functionMapping = {
     'size': parseSize,
     'extend': parseExtend,
     'blur': parseBlur,
-    'pageNumber': parsePageNumber,
+    'page': parsePageNumber,
     'processType': parseProcessType,
     'autoRotate': parseAutoRotate,
 };
@@ -126,13 +126,13 @@ function parsePageNumber(key) {
 
     if (regexMatch && regexMatch.length > 0) {
 
-        var pageNumber = parseInt(regexMatch[2], 10);
+        var page = parseInt(regexMatch[2], 10);
 
         splitArray.splice(0, 1);
         var path = splitArray.join('/');
 
         return {
-            pageNumber: pageNumber,
+            page: page,
             path: path
         }
     } else {
