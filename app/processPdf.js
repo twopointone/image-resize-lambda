@@ -36,7 +36,7 @@ function processPdf(destPath, pdfParams, processPdfCallback) {
 }
 
 function createPdfPreview(pdfContent, filename, page, callback){
-  gm(pdfContent, filename + "[" + page + "]").toBuffer("PNG", callback);
+  gm(pdfContent, filename + "[" + (page - 1) + "]").toBuffer("PNG", callback);
 }
 
 exports.processPdf = processPdf;
