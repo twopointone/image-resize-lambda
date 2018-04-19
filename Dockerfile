@@ -4,10 +4,8 @@ ADD nodesource.gpg.key /etc
 
 WORKDIR /tmp
 
-ENV UTILITY_PACKAGES graphicsmagick
-
 RUN apt-get update && \
-    apt-get install -y $UTILITY_PACKAGES
+    apt-get install -y graphicsmagick
 
 RUN yum -y install gcc-c++ && \
     rpm --import /etc/nodesource.gpg.key && \
