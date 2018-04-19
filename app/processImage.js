@@ -27,10 +27,10 @@ function processImage(key, imageParams, processImageCallback) {
             console.log("Calling storage processor");
             storage.storage.getFile(imageParams.path, callback);
         },
-        function(image, callback) {
-            console.log("Check if GIF");
-            captureSpecificFrame(image, imageParams.page, path.basename(key), callback);
-        },
+        // function(image, callback) {
+        //     console.log("Check if GIF");
+        //     captureSpecificFrame(image, imageParams.page, path.basename(key), callback);
+        // },
         function(image, callback) {
             console.log("Check orientation");
             validateImageRotation(image, imageParams.auto_rotate, callback);
