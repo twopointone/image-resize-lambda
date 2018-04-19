@@ -5,7 +5,7 @@ var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 const path = require('path');
-var gm = require('gm');
+// var gm = require('gm');
 
 const functionMapping = {
     'smartcrop': applySmartCrop,
@@ -27,10 +27,10 @@ function processImage(key, imageParams, processImageCallback) {
             console.log("Calling storage processor");
             storage.storage.getFile(imageParams.path, callback);
         },
-        function(image, callback) {
-            console.log("Check if GIF");
-            captureSpecificFrame(image, imageParams.page, path.basename(key), callback);
-        },
+        // function(image, callback) {
+        //     console.log("Check if GIF");
+        //     captureSpecificFrame(image, imageParams.page, path.basename(key), callback);
+        // },
         function(image, callback) {
             console.log("Check orientation");
             validateImageRotation(image, imageParams.auto_rotate, callback);
