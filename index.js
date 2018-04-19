@@ -27,11 +27,12 @@ exports.handler = function(event, context, callback) {
 
         var imageProcessor;
         var rawProcessor;
+        var pdfProcessor;
         var params;
         var parseArray;
 
         if (processorData.processor == 'images') {
-            parseArray = ['size', 'extend', 'blur', 'autoRotate', 'processType'];
+            parseArray = ['page', 'size', 'extend', 'blur', 'autoRotate', 'processType'];
             params = paramParser.processAllParse(parseArray, processorData.path);
             console.log("Parsed image processing params. params=", params);
             imageProcessor = true;
