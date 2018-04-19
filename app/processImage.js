@@ -29,7 +29,7 @@ function processImage(key, imageParams, processImageCallback) {
         },
         function(image, callback) {
             console.log("Check if GIF");
-            captureFirstFrame(image, path.basename(key), callback);
+            captureSpecificFrame(image, imageParams.page, path.basename(key), callback);
         },
         function(image, callback) {
             console.log("Check orientation");
@@ -55,7 +55,7 @@ function processImage(key, imageParams, processImageCallback) {
         },
         function(data, fileInfo, callback) {
             // save file to S3
-            console.log("Saving file to storage");
+            console.log("Saving file to storage", fileInfo);
             storage.storage.saveFile(key.replace('/',''), data, fileInfo, callback);
         },
     ], function(err, data) {
@@ -70,12 +70,8 @@ function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
 }
 
-function captureFirstFrame(image, filename, callback){
-  if(filename.endsWith(".gif")){
-    gm(image, filename + "[0]").toBuffer("JPG", callback);
-  }else{
-    callback(null, image);
-  }
+function captureSpecificFrame(image, page, filename, callback){
+  gm(image, filename + "[" + (page-1) + "]").toBuffer("PNG", callback);
 }
 
 function validateImageRotation(image, auto_rotate, callback) {

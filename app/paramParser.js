@@ -19,7 +19,7 @@ function parseProcessor(key) {
     var splitArray = key.split('/');
     splitArray.splice(0, 1);
 
-    var regex = /(images|pdf|raw)/;
+    var regex = /(images|raw)/;
     var regexMatch = splitArray[0].match(regex);
 
     if (regexMatch && regexMatch.length > 0) {
