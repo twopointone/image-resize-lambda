@@ -16,6 +16,5 @@ config.OUTPUT_BUCKET = process.env.OUTPUT_BUCKET;
 config.S3_MAX_AGE = process.env.S3_MAX_AGE || 86400;
 
 config.BASE_DESTINATION_URL = process.env.BASE_DESTINATION_URL || 'http://localhost:' + config.PORT;
-// process.env.PATH = process.env.PATH + ':/gm/usr/local/bin';
 
 module.exports = config;
