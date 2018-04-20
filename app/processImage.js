@@ -6,6 +6,8 @@ var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 const path = require('path');
 var gm = require('gm');
+var fs = require('fs');
+var mkdirp = require('mkdirp');
 
 const functionMapping = {
     'smartcrop': applySmartCrop,
@@ -74,11 +76,20 @@ function captureSpecificFrame(image, page, destPath, callback){
   var filename = path.basename(destPath);
   var extname = path.extname(destPath);
   if(extname == ".gif" || extname == ".pdf"){
-    gm(image, filename + "[0]").setFormat("jpeg").toBuffer(function(err, data, info) {
+    var destFilePath = path.join(".tmp", destPath);
+    mkdirp.sync(path.dirname(destFilePath));
+    var x = gm(image, filename + "[0]");
+    y = x.setFormat("JPG");
+    y.write(destFilePath, function(err) {
         if (err) {
             callback(err);
         } else {
-            callback(null, data);
+          fs.readFile(destFilePath, function (err, imageData) {
+              if (err) {
+                  callback(err);
+              }
+              callback(null, imageData);
+          })
         }
     });
   }else{
