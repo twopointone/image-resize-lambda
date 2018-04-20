@@ -79,8 +79,11 @@ function captureSpecificFrame(image, page, destPath, callback){
     var destFilePath = path.join(".tmp", destPath);
     mkdirp.sync(path.dirname(destFilePath));
     var x = gm(image, filename + "[0]");
+    console.log("gm init");
     y = x.setFormat("JPG");
+    console.log("gm set format done");
     y.write(destFilePath, function(err) {
+      console.log("gm write file done");
         if (err) {
             callback(err);
         } else {
