@@ -5,7 +5,7 @@ var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 const path = require('path');
-var gm = require('gm').subClass({graphicsMagick: true});
+var gm = require('gm').subClass({imageMagick: false});
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 
@@ -68,20 +68,6 @@ function processImage(key, imageParams, processImageCallback) {
     });
 }
 
-function gmToBuffer (data) {
-  return new Promise((resolve, reject) => {
-    data.stream((err, stdout, stderr) => {
-      if (err) { return reject(err) }
-      const chunks = []
-      stdout.on('data', (chunk) => { chunks.push(chunk) })
-      // these are 'once' because they can and do fire multiple times for multiple errors,
-      // but this is a promise so you'll have to deal with them one at a time
-      stdout.once('end', () => { resolve(Buffer.concat(chunks)) })
-      stderr.once('data', (data) => { reject(String(data)) })
-    })
-  })
-}
-
 function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
 }
@@ -90,17 +76,7 @@ function captureSpecificFrame(image, page, destPath, callback){
   var filename = path.basename(destPath);
   var extname = path.extname(destPath);
   if(extname == ".gif" || extname == ".pdf"){
-    var data = gm(image, filename+"[0]").setFormat("JPEG");
-    gmToBuffer(data).then(function(buffer){
-      callback(null, buffer);
-    }, function(err){
-      callback(err);
-    });
-    // var destFilePath = path.join("/tmp", destPath);
-    // mkdirp.sync(path.dirname(destFilePath));
-    // fs.writeFile(destFilePath, image, function(err){
-    //   gm(destFilePath+"[0]").toBuffer("JPG", callback);
-    // });
+    gm(image, filename+"[0]").toBuffer("JPEG", callback);
   }else{
     callback(null, image);
   }
