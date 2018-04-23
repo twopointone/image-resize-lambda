@@ -5,7 +5,7 @@ var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 const path = require('path');
-var gm = require('gm');
+var gm = require('gm').subClass({graphicsMagick: true});
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 
