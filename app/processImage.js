@@ -5,7 +5,7 @@ var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
 const path = require('path');
-const gm = require('gm').subClass({imageMagick: false});
+const gm = require('gm').subClass({imageMagick: true});
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 
@@ -76,7 +76,8 @@ function captureSpecificFrame(image, page, destPath, callback){
   var filename = path.basename(destPath);
   var extname = path.extname(destPath);
   if(extname == ".gif" || extname == ".pdf"){
-    gm(image, filename+"[0]").toBuffer("jpeg", callback);
+    var filepath = path.join(".tmp", destPath);
+    gm(image, filename + "[0]").toBuffer("JPEG", callback);
   }else{
     callback(null, image);
   }
