@@ -76,7 +76,6 @@ function captureSpecificFrame(image, page, destPath, callback){
   var filename = path.basename(destPath);
   var extname = path.extname(destPath);
   if(extname == ".gif" || extname == ".pdf"){
-    var filepath = path.join(".tmp", destPath);
     gm(image, filename + "[0]").toBuffer("JPEG", callback);
   }else{
     callback(null, image);
