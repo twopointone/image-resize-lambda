@@ -4,7 +4,10 @@ var config = require('../config.js');
 var sharp = require('sharp');
 var smartcrop = require('smartcrop-sharp');
 var storage = require(config.STORAGE);
-
+const path = require('path');
+const gm = require('gm').subClass({imageMagick: true});
+var fs = require('fs');
+var mkdirp = require('mkdirp');
 
 const functionMapping = {
     'smartcrop': applySmartCrop,
@@ -25,6 +28,10 @@ function processImage(key, imageParams, processImageCallback) {
             // Get the file from the disk or S3
             console.log("Calling storage processor");
             storage.storage.getFile(imageParams.path, callback);
+        },
+        function(image, callback) {
+            console.log("Check if GIF");
+            captureSpecificFrame(image, imageParams.page, key, callback);
         },
         function(image, callback) {
             console.log("Check orientation");
@@ -50,7 +57,7 @@ function processImage(key, imageParams, processImageCallback) {
         },
         function(data, fileInfo, callback) {
             // save file to S3
-            console.log("Saving file to storage");
+            console.log("Saving file to storage", fileInfo);
             storage.storage.saveFile(key.replace('/',''), data, fileInfo, callback);
         },
     ], function(err, data) {
@@ -63,6 +70,16 @@ function processImage(key, imageParams, processImageCallback) {
 
 function getCropFunction(cropType) {
     return functionMapping[cropType.toLowerCase()]
+}
+
+function captureSpecificFrame(image, page, destPath, callback){
+  var filename = path.basename(destPath);
+  var extname = path.extname(destPath);
+  if(extname == ".gif" || extname == ".pdf"){
+    gm(image, filename + "["+(page-1)+"]").toBuffer("JPEG", callback);
+  }else{
+    callback(null, image);
+  }
 }
 
 function validateImageRotation(image, auto_rotate, callback) {

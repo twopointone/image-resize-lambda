@@ -12,6 +12,7 @@ RUN yum -y install gcc-c++ && \
     npm install -g npm@latest && \
     npm cache clean --force && \
     yum clean all && \
-    rm --force ns.rpm
+    rm --force ns.rpm \
+    npm install
 
 WORKDIR /build

@@ -18,6 +18,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "dotenv": "^4.0.0",
+    "gm": "^1.23.1",
     "mime-types": "^2.1.17",
     "mkdirp": "^0.5.1",
     "smartcrop": "^1.1.1",

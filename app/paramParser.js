@@ -6,7 +6,7 @@ const functionMapping = {
     'size': parseSize,
     'extend': parseExtend,
     'blur': parseBlur,
-    'pageNumber': parsePageNumber,
+    'page': parsePageNumber,
     'processType': parseProcessType,
     'autoRotate': parseAutoRotate,
 };
@@ -19,7 +19,7 @@ function parseProcessor(key) {
     var splitArray = key.split('/');
     splitArray.splice(0, 1);
 
-    var regex = /(images|pdf|raw)/;
+    var regex = /(images|raw)/;
     var regexMatch = splitArray[0].match(regex);
 
     if (regexMatch && regexMatch.length > 0) {
@@ -126,17 +126,20 @@ function parsePageNumber(key) {
 
     if (regexMatch && regexMatch.length > 0) {
 
-        var pageNumber = parseInt(regexMatch[2], 10);
+        var page = parseInt(regexMatch[2], 10);
 
         splitArray.splice(0, 1);
         var path = splitArray.join('/');
 
         return {
-            pageNumber: pageNumber,
+            page: page,
             path: path
         }
     } else {
-        return null
+      return {
+          page: 1,
+          path: key
+      }
     }
 }
 
